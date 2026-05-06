@@ -1,9 +1,15 @@
+import pandas as pd
+import numpy as np
+
+from pathlib import Path
+
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow, 
     QWidget, 
     QHBoxLayout,
-    QVBoxLayout, 
+    QVBoxLayout,
+    QTableView, 
     QLabel, 
     QLineEdit, 
     QPushButton,
@@ -11,6 +17,8 @@ from PyQt6.QtWidgets import (
 )
 from lum_import_browse import Browse
 from lum_import_add_data import AddReplace
+from lum_import_table_control import TableControl
+from lum_import_table import TableModel
 
 class ImportWindow(QMainWindow):
     '''The dialog window for importing from file'''
@@ -19,7 +27,28 @@ class ImportWindow(QMainWindow):
         super().__init__() #use __init__() from QMainWindow 
 
         #variables
+        #path
         self.path = path
+
+        #controls
+        self.read_controls = {
+            'delimiter':',',        #delimiter
+            'skip_rows':'',         #text seen by user
+            'skip_columns':'',      #text seen by user
+            'skr':[],               #numbers of rows to skip
+            'uc':[]                 #numbers of columns to use
+        }
+        #headings
+        self.headings = {
+            'source':'r',           #take data from range or list
+            'range':'',             #text seen by user
+            'list':'',              #text seen by user
+            'r':[],                 #headings when source 'r' (range)
+            'l':[]                  #headings when source 'l' (list)
+        }
+
+        #raw_data
+        self.raw_data = pd.DataFrame()
         
         #window properties
         self.setWindowTitle("Import from text file")
@@ -30,17 +59,102 @@ class ImportWindow(QMainWindow):
         widget.setLayout(L)
         self.setCentralWidget(widget)
 
+        #browse tab
+        self.Browse = Browse(self.path)
+        L.addWidget(self.Browse)
 
-        self.browse_tab = Browse(self.path)
-        L.addWidget(self.browse_tab)
+        self.Browse.path_changed.connect(self.update_path)
 
-        self.browse_tab.path_changed.connect(self.update_path)
+        #table tap
+        L2 = QHBoxLayout()
+        L.addLayout(L2)
+        
+        #table widget
+        self.Table = QTableView()
+        L2.addWidget(self.Table)
 
-        self.add_replace_tab = AddReplace()
-        L.addWidget(self.add_replace_tab)
+        #table data (model)
+        self.TableModel = TableModel(self.raw_data)
+        self.Table.setModel(self.TableModel)
+        
+        #widget with controls
+        self.TableControl = TableControl()
+        L2.addWidget(self.TableControl)
+
+        self.TableControl.reading_changed.connect(self.update_reading)
+        self.TableControl.headings_changed.connect(self.update_headings)
+
+        #add and replace tab
+        self.AddReplace = AddReplace()
+        L.addWidget(self.AddReplace)
+
+        #message lable
+        self.ImportMessage = QLabel('Messages: none')
+        L.addWidget(self.ImportMessage)
 
     def update_path(self):
-        self.path = self.browse_tab.path
+        '''Handles the event of path changing'''
+        self.path = self.Browse.path
+        self.read_text_file(self.path)
+        self.update_table(self.raw_data)
+
+    def update_reading(self):
+        '''Handels the event of reding controls chaneging'''
+        self.read_controls = self.TableControl.read_controls
+        self.read_text_file(self.path)
+        self.update_table(self.raw_data)
+    
+    def update_headings(self):
+        '''Handels the event of headings changing'''
+        self.headings = self.TableControl.read_controls
+        self.update_table(self.raw_data)
+    
+    def update_table(self, data):
+        '''Updates data in the table'''
+        self.TableModel = TableModel(data)
+        self.Table.setModel(self.TableModel)
+    
+    def read_text_file(self, path):
+        '''Reads the file provided
+        
+        Firstly, tryes to use pandas read_csv() function.
+        If unsuccesfull, tries to diplay all lines in file as rows in one column.
+        If still unsucesfull, displayes the error message'''
+        try:
+            #read_csv()
+            with open(Path(path), 'r') as f:
+                if self.read_controls['uc']:     # use columns not empty
+                    self.raw_data = pd.read_csv(
+                        f, 
+                        sep=self.read_controls['delimiter'], 
+                        skiprows=self.read_controls['skr'],
+                        usecols=self.read_controls['uc'],
+                        header=0
+                    )
+                else:                           # use columns empty
+                    self.raw_data = pd.read_csv(
+                        f, 
+                        sep=self.read_controls['delimiter'], 
+                        skiprows=self.read_controls['skr'],
+                        header=0
+                    )
+            #when rows have difren number of delimiter, they are treated as indexes for an empty column
+            #this enshures that only proper (numerical) indexes are assigned
+            assert float(self.raw_data.index[1])
+            self.ImportMessage.setText('Message: file red')
+                
+        except:
+            #read file as lines
+            try:
+                with open(Path(path), 'r') as f:
+                    self.raw_data = pd.DataFrame([s.replace('\n', '') for s in f.readlines()])
+                    assert float(self.raw_data.index[1])
+                self.ImportMessage.setText('Message: file red')
+            #all hope lost
+            except:
+                self.ImportMessage.setText('ERROR: Invalid file format. Use human-redable text file with UTC-8 encoding')
+        return self.raw_data
+
 
 #testing
 if __name__ == '__main__':
@@ -51,5 +165,3 @@ if __name__ == '__main__':
     window.show()
 
     app.exec()
-
-    print(window.path)

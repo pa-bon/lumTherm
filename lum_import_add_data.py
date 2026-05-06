@@ -21,7 +21,7 @@ class AddReplace(QWidget):
 
         #main layout
         layout = QHBoxLayout()
-        layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.setLayout(layout)
        
 

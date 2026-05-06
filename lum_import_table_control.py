@@ -1,4 +1,4 @@
-from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import (
     QApplication, 
     QWidget, 
@@ -6,9 +6,7 @@ from PyQt6.QtWidgets import (
     QGridLayout, 
     QLabel, 
     QLineEdit,
-    QRadioButton, 
-    QPushButton,
-    QFileDialog
+    QRadioButton
 )
 from lum_tools import (
     phriser,
@@ -16,12 +14,12 @@ from lum_tools import (
     phriser_range
 )
 
-class TableControls(QWidget):
+class TableControl(QWidget):
     '''Add or replace existing data'''
     
     #custom signals
     
-    #notifies when delimiter, rows to skip (skr) or columns to skip (skc) change
+    #notifies when delimiter, rows to skip (skr) or columns to use (uc) change
     reading_changed = pyqtSignal()
     
     #notifies when source or headings (r or l) change
@@ -34,9 +32,9 @@ class TableControls(QWidget):
         self.read_controls = {
             'delimiter':',',        #delimiter
             'skip_rows':'',         #text seen by user
-            'skip_columns':'',      #text seen by user
+            'use_columns':'',       #text seen by user
             'skr':[],               #numbers of rows to skip
-            'skc':[]                #numbers of columns to skip
+            'uc':[]                 #numbers of columns to use
         }
 
         self.headings = {
@@ -60,7 +58,7 @@ class TableControls(QWidget):
         #labels
         reading.addWidget(QLabel('Delimiter:'), 0, 0)
         reading.addWidget(QLabel('Skip rows:'), 1, 0)
-        reading.addWidget(QLabel('Skip columns:'), 2, 0)
+        reading.addWidget(QLabel('Use columns:'), 2, 0)
 
         #input fields
         self.delimiter_line = QLineEdit(self.read_controls['delimiter'])
@@ -71,7 +69,7 @@ class TableControls(QWidget):
         self.skip_rows_line.textChanged.connect(self.skip_rows_changed)
         reading.addWidget(self.skip_rows_line, 1, 1)
 
-        self.skip_columns_line = QLineEdit(self.read_controls['skip_columns'])
+        self.skip_columns_line = QLineEdit(self.read_controls['use_columns'])
         self.skip_columns_line.textChanged.connect(self.skip_columns_changed)
         reading.addWidget(self.skip_columns_line, 2, 1)
 
@@ -122,13 +120,13 @@ class TableControls(QWidget):
             self.reading_changed.emit()
 
     def skip_columns_changed(self, text):
-        '''Handels the event of changing column to skip
+        '''Handels the event of changing column to use
         
         Will emit signal only when valid string is provided.'''
-        self.read_controls['skip_columns'] = text
-        skc = phriser(text)
-        if skc:
-            self.read_controls['skc'] = skc
+        self.read_controls['use_columns'] = text
+        uc = phriser(text)
+        if uc:
+            self.read_controls['uc'] = uc
             self.reading_changed.emit()
 
     def radio_range_toggled(self, selected):
@@ -179,7 +177,7 @@ if __name__ == '__main__':
     
     app = QApplication([])
 
-    window = TableControls()
+    window = TableControl()
     window.show()
 
     app.exec()
