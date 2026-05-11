@@ -28,6 +28,8 @@ class TableControl(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.setMaximumWidth(250)
+
         #controls
         self.read_controls = {
             'delimiter':',',        #delimiter
@@ -70,7 +72,7 @@ class TableControl(QWidget):
         reading.addWidget(self.skip_rows_line, 1, 1)
 
         self.skip_columns_line = QLineEdit(self.read_controls['use_columns'])
-        self.skip_columns_line.textChanged.connect(self.skip_columns_changed)
+        self.skip_columns_line.textChanged.connect(self.use_columns_changed)
         reading.addWidget(self.skip_columns_line, 2, 1)
 
         #defining headings section
@@ -114,18 +116,18 @@ class TableControl(QWidget):
         
         Will emit signal only when valid string is provided.'''
         self.read_controls['skip_rows'] = text
-        skr = phriser(text)
-        if skr:
+        valid, skr = phriser(text)
+        if valid:
             self.read_controls['skr'] = skr
-            self.reading_changed.emit()
-
-    def skip_columns_changed(self, text):
+            self.reading_changed.emit() 
+            
+    def use_columns_changed(self, text):
         '''Handels the event of changing column to use
         
         Will emit signal only when valid string is provided.'''
         self.read_controls['use_columns'] = text
-        uc = phriser(text)
-        if uc:
+        valid, uc = phriser(text)
+        if valid:
             self.read_controls['uc'] = uc
             self.reading_changed.emit()
 

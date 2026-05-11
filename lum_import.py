@@ -106,7 +106,10 @@ class ImportWindow(QMainWindow):
     
     def update_headings(self):
         '''Handels the event of headings changing'''
-        self.headings = self.TableControl.read_controls
+        self.headings = self.TableControl.headings
+        headings_list = self.headings[self.headings['source']]
+        if len(headings_list) == len(self.raw_data.columns):
+            self.raw_data.columns = headings_list
         self.update_table(self.raw_data)
     
     def update_table(self, data):

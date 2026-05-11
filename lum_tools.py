@@ -5,22 +5,25 @@ def phriser(text: str):
     
     String may contain numbers and ranges (eq. 1-5) seperated by commas.
 
-    Examples:   '1,2,3,4'   '1, 2-4'
+    Examples:   '1,2,3,4'   '1, 2-4'    '' <- empty list
     
     Invalid inputs return empty list
     '''
     results = []
-    try:
-        contents = [i.replace(' ','') for i in  text.split(',')]
-        for item in contents:
-            if '-' in item:
-                [start, stop] = item.split('-')
-                results += list(range(int(start), int(stop)+1))
-            else:
-                results.append(int(item))
-        return results
-    except:
-        return []
+    if text == '':      #handels empty string
+        return True, results
+    else:
+        try:
+            contents = [i.replace(' ','') for i in text.split(',')]
+            for item in contents:
+                if '-' in item:
+                    [start, stop] = item.split('-')
+                    results += list(range(int(start), int(stop)+1))     #stop included
+                else:
+                    results.append(int(item))
+            return True, results
+        except:        #any error
+            return False, []
 
 #testing
 if __name__ == '__main__':
@@ -35,7 +38,7 @@ if __name__ == '__main__':
 
 
 def phriser_range(text: str):
-    '''Converts strings to list of integers.
+    '''Converts strings to list of floats.
     
     String must contain tree integers corresponding to `start`, `stop` and `step`, seperated by commas.
     Expresion `(start - stop)` must be devisible by `step`.
@@ -63,7 +66,7 @@ if __name__ == '__main__':
     print('...tests pased')
 
 def phriser_list(text: str):
-    '''Converts strings to list of integers.
+    '''Converts strings to list of floats.
     
     String must contain numbers seperated by commas.
 
@@ -73,7 +76,7 @@ def phriser_list(text: str):
     '''
     results = []
     try:
-        contents = [i.replace(' ','') for i in  text.split(',')]
+        contents = [i.replace(' ','') for i in text.split(',')]
         for item in contents:
             results.append(float(item))
         return results
