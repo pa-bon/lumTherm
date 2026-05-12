@@ -11,7 +11,8 @@ from PyQt6.QtWidgets import (
 from lum_tools import (
     phriser,
     phriser_list,
-    phriser_range
+    phriser_range,
+    mark_line_edit_error
 )
 
 class TableControl(QWidget):
@@ -71,9 +72,9 @@ class TableControl(QWidget):
         self.skip_rows_line.textChanged.connect(self.skip_rows_changed)
         reading.addWidget(self.skip_rows_line, 1, 1)
 
-        self.skip_columns_line = QLineEdit(self.read_controls['use_columns'])
-        self.skip_columns_line.textChanged.connect(self.use_columns_changed)
-        reading.addWidget(self.skip_columns_line, 2, 1)
+        self.use_columns_line = QLineEdit(self.read_controls['use_columns'])
+        self.use_columns_line.textChanged.connect(self.use_columns_changed)
+        reading.addWidget(self.use_columns_line, 2, 1)
 
         #defining headings section
         layout.addWidget(QLabel('Headings'))
@@ -117,9 +118,11 @@ class TableControl(QWidget):
         Will emit signal only when valid string is provided.'''
         self.read_controls['skip_rows'] = text
         valid, skr = phriser(text)
+        mark_line_edit_error(self.skip_rows_line, valid)
         if valid:
             self.read_controls['skr'] = skr
-            self.reading_changed.emit() 
+            self.reading_changed.emit()
+         
             
     def use_columns_changed(self, text):
         '''Handels the event of changing column to use
@@ -127,6 +130,7 @@ class TableControl(QWidget):
         Will emit signal only when valid string is provided.'''
         self.read_controls['use_columns'] = text
         valid, uc = phriser(text)
+        mark_line_edit_error(self.use_columns_line, valid)
         if valid:
             self.read_controls['uc'] = uc
             self.reading_changed.emit()
@@ -156,6 +160,7 @@ class TableControl(QWidget):
         Will emit signal only when valid string is provided.'''
         self.headings['range'] = text
         r = phriser_range(text)
+        mark_line_edit_error(self.range_line, bool(r))
         if r:
             list = ', '.join([str(i) for i in r])
             self.headings['r'] = r
@@ -170,9 +175,11 @@ class TableControl(QWidget):
         Will emit signal only when valid string is provided.'''
         self.headings['list'] = text
         l = phriser_list(text)
+        mark_line_edit_error(self.list_line, bool(l))
         if l:
             self.headings['l'] = l
             self.headings_changed.emit()
+
 
 #testing
 if __name__ == '__main__':
