@@ -3,8 +3,14 @@ A software for analysis of optical thermometry.
 
 ## Overview
 
-Luminescent thermometry is one of the possibilities for optical redout of temperature. It works by exploring T-dependent emission spectra of luminescent species. In particular, a thermometric parameter monitoring a change in ratio of emission intensity in two different parts of the spectrum is often used. This software aims to facilitate finding the optimal wavelength, for which the ratios should be calculated to achieve highest sensitivity and lowest redout errors.  
+Luminescent thermometry is one of the possibilities for optical redout of temperature. It works by exploring T-dependent emission spectra of luminescent species. In particular, a thermometric parameter monitoring a change in ratio of emission intensity in two different parts of the spectrum is often used (Figure 1). This software aims to facilitate finding the optimal wavelength, for which the ratios should be calculated to achieve highest sensitivity and lowest redout errors.  
 **LumTherm** is based on a brute-force approach in which the ratio between all pairs of wavelengths is calculated for all temperatures. Then, the graphical interface involving sensitivity heat-maps will help the user finding the ones optimal for them. The chosen results may then be exported as plain `.txt` or `.csv` data for calibration curve fitting and further analysis.
+
+<figure>
+    <img src="lum_therm_2.png"
+         alt="Luminescent thermometry for a platinum complex">
+    <figcaption>Fig. 1. An exeplary set of T-dependent emission spectra (a) for a platinum complex, with sensitivity analysis on (b) and temperature redout error on (c). For more information, see oryginal publication; DOI: 0.26434/chemrxiv-2025-70v85 </figcaption>
+</figure>
 
 ## Backend
 
