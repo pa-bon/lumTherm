@@ -1,31 +1,36 @@
 # lumTherm
-A software for analysis of optical thermometry
+A software for analysis of optical thermometry.
+
+## Overview
+
+Luminescent thermometry is one of the possibilities for optical redout of temperature. It works by exploring T-dependent emission spectra of luminescent species. In particular, a thermometric parameter monitoring a change in ratio of emission intensity in two different parts of the spectrum is often used. This software aims to facilitate finding the optimal wavelength, for which the ratios should be calculated to achieve highest sensitivity and lowest redout errors.  
+**LumTherm** is based on a brute-force approach in which the ratio between all pairs of wavelengths is calculated for all temperatures. Then, the graphical interface involving sensitivity heat-maps will help the user finding the ones optimal for them. The chosen results may then be exported as plain `.txt` or `.csv` data for calibration curve fitting and further analysis.
 
 ## Backend
 
 ### 1. Packages
 
-The program will be written using:
+The program uses:
 * Pandas
 * Numpy
-* SciPy
-* MatplotLib
 * PyQt6
 * pathlib
+* [...]
 
 Details in `requirenments.txt`
 
-### 2. Data storage
+### 2. Data
 
-The imported data will be stored as Panda's dataframe
+The imported data will be stored as Panda's dataframe.
 
-The analysed data will be stored as a series of 3D Numpy arrays (or xarray, to be determined) with `x` and `y` representing wavelenghts and `z` temperatures. The axes will not be a part of the array. 
+The analyzed data will be stored as a series of 3D NumPy arrays (or xarray, to be determined) with `x` and `y` representing wavelengths and `z` temperatures. The axes will not be a part of the array. Three such arrays will be necessary:
+* intensity ratios
+* their derivative over T
+* their teperature redout error  
 
-Float32 will be used to reduce memory consumpition (6-8 signififcant digits, shold be enaught)
+Float32 will be used to reduce memory consumption (6-8 significant digits, should be enough). One array with processed data will be of size about: 2000 x 2000 x 40. This gives 160 000 000 numbers, 1.28 GB with float64, but only half of that with float32. The data menagment is the bigest chalenge of the project.
 
-One aray with presessd data will be of size about: 2000 x 2000 x 40. This gives 80 000 000 numbers, 640 MB with float64, but only half of that with float32
-
-The metadata will be stored in a dictionary
+The metadata will be stored in a dictionary.
 
 Current state of the program should be writable to .h5
 
@@ -33,39 +38,43 @@ Current state of the program should be writable to .h5
 
 #### LumFile
 
-Current stste of the program. Handels writing and reading form .h5
+Current state of the program. Handels writing and reading form .h5
 
 #### LumSpectrum
 
-Handels the data. Collests the functions for data analysis.
+Handels the data. Collects the functions for data analysis.
+
+[...]
 
 ## Frontend
 
 ### 1. Windows
-The program requires the following windows
+The graphical interface involves several windows.
 
 #### The main window
 
-Displays the data
+Displays the data. 
+
+[...]
 
 #### Data import window
 
-Allows to reda data from a text file. An interface to use `from_csv()` function from Pandas
+Allows to read data from a text file. An interface to use `from_csv()` function from Pandas.
 
 It contains:
 
 * **the browse section** with file path and 'browse' button
-* **the tabel preview** updated continousely
+* **the table preview** updated continuously
 * **the import settings** allowing to set:
-    - delimeter (text)
+    - delimiter (text)
     - rows to skip (list)
     - columns to skip (list)
     - columns headings (list or range)
-* **the saving section** allowing to add or replace existing data
+* **the saving section** allowing to add or replace existing data. 
 
-#### Smooth/bacground window
+#### Smooth/background window
 
-Handels the smoothing, bacground subtraction and uncetainty determination
+Handels the smoothing, background subtraction and uncertainty determination
 
 #### Data export window
 
@@ -73,5 +82,8 @@ Allows to save results to .json, .csv or .opju
 
 #### File browsing windows (open and save)
 
-Provided within the PyQt6 library
+Provided within the PyQt6 library.
+
+[...]
+
 
