@@ -6,7 +6,8 @@ from PyQt6.QtWidgets import (
     QGridLayout, 
     QLabel, 
     QLineEdit,
-    QRadioButton
+    QRadioButton,
+    QPlainTextEdit
 )
 from lum_tools import (
     phriser,
@@ -101,7 +102,7 @@ class TableControl(QWidget):
         self.range_line.textChanged.connect(self.range_changed)
         headings.addWidget(self.range_line, 1, 1)
 
-        self.list_line = QLineEdit('')
+        self.list_line = QPlainTextEdit('')
         self.list_line.setEnabled(False)
         self.list_line.textChanged.connect(self.list_changed)
         headings.addWidget(self.list_line, 3, 1)
@@ -166,13 +167,14 @@ class TableControl(QWidget):
             self.headings['r'] = r
             self.headings['l'] = r
             self.headings['list'] = list
-            self.list_line.setText(list)
+            self.list_line.setPlainText(list)
             self.headings_changed.emit()
 
-    def list_changed(self, text):
+    def list_changed(self):
         '''Handels the event of changing list of headings
         
         Will emit signal only when valid string is provided.'''
+        text = self.list_line.toPlainText().replace('\n', '')
         self.headings['list'] = text
         l = phriser_list(text)
         mark_line_edit_error(self.list_line, bool(l))
