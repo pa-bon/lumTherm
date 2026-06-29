@@ -14,9 +14,13 @@ from PyQt6.QtWidgets import (
 )
 from lum_import_browse import Browse
 from lum_import_add_data import AddReplace
-from lum_import_table_control import TableControl
+#from lum_import_table_control import TableControl
+from lum_import_reading import Reading
+from lum_import_headings import Headings
 from lum_import_table import TableModel
+from lum_import_info import DataInfo
 from lum_data_tmp import Data_tmp
+
 
 class ImportWindow(QWidget):
     '''The dialog window for importing from file'''
@@ -79,11 +83,17 @@ class ImportWindow(QWidget):
         self.Table.setModel(self.TableModel)
         
         #widget with controls
-        self.TableControl = TableControl()
-        L2.addWidget(self.TableControl)
+        L3 = QVBoxLayout()
+        self.DataInfo = DataInfo(self.raw_data.shape)
+        L3.addWidget(self.DataInfo)
+        self.Reading = Reading()
+        L3.addWidget(self.Reading)
+        self.Headings = Headings()
+        L3.addWidget(self.Headings)
+        L2.addLayout(L3)
 
-        self.TableControl.reading_changed.connect(self.update_reading)
-        self.TableControl.headings_changed.connect(self.update_headings)
+        self.Reading.reading_changed.connect(self.update_reading)
+        self.Headings.headings_changed.connect(self.update_headings)
 
         #add and replace tab
         self.AddReplace = AddReplace()
@@ -104,22 +114,23 @@ class ImportWindow(QWidget):
 
     def update_reading(self):
         '''Handels the event of reding controls chaneging'''
-        self.read_controls = self.TableControl.read_controls
+        self.read_controls = self.Reading.read_controls
         self.read_text_file(self.path)
         self.update_table(self.raw_data)
     
     def update_headings(self):
         '''Handels the event of headings changing'''
-        self.headings = self.TableControl.headings
+        self.headings = self.Headings.headings
         headings_list = self.headings[self.headings['source']]
         if len(headings_list) == len(self.raw_data.columns):
             self.raw_data.columns = headings_list
         self.update_table(self.raw_data)
     
     def update_table(self, data):
-        '''Updates data in the table'''
+        '''Updates data in the table and the data info window'''
         self.TableModel = TableModel(data)
         self.Table.setModel(self.TableModel)
+        self.DataInfo.update(self.raw_data.shape)
     
     def read_text_file(self, path):
         '''Reads the file provided
