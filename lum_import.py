@@ -11,24 +11,25 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QTableView, 
     QLabel, 
-    QLineEdit, 
-    QPushButton,
-    QFileDialog
 )
 from lum_import_browse import Browse
 from lum_import_add_data import AddReplace
 from lum_import_table_control import TableControl
 from lum_import_table import TableModel
+from lum_data_tmp import Data_tmp
 
-class ImportWindow(QMainWindow):
+class ImportWindow(QWidget):
     '''The dialog window for importing from file'''
     
-    def __init__(self, path):
+    def __init__(self, path, holder):
         super().__init__() #use __init__() from QMainWindow 
 
         #variables
         #path
         self.path = path
+        #data holder
+        self.holder = holder
+
 
         #controls
         self.read_controls = {
@@ -55,9 +56,9 @@ class ImportWindow(QMainWindow):
         
         #layout initialization
         L = QVBoxLayout()
-        widget = QWidget()
-        widget.setLayout(L)
-        self.setCentralWidget(widget)
+        #widget = QWidget()
+        self.setLayout(L)
+        #self.setCentralWidget(widget)
 
         #browse tab
         self.Browse = Browse(self.path)
@@ -87,6 +88,9 @@ class ImportWindow(QMainWindow):
         #add and replace tab
         self.AddReplace = AddReplace()
         L.addWidget(self.AddReplace)
+
+        self.AddReplace.add_signal.connect(self.add_data)
+        self.AddReplace.repalce_signal.connect(self.replace_data)
 
         #message lable
         self.ImportMessage = QLabel('Messages: none')
@@ -157,14 +161,29 @@ class ImportWindow(QMainWindow):
             except:
                 self.ImportMessage.setText('ERROR: Invalid file format. Use human-redable text file with UTC-8 encoding')
         return self.raw_data
+    
+    def add_data(self):
+        '''Adds data in current view to the total'''
+        self.holder.add_data(self.raw_data)
+    
+    def replace_data(self):
+        '''Replaces data from the current view in the total'''
+        self.holder.replace_data(self.raw_data)  
 
 
 #testing
 if __name__ == '__main__':
+
+    holder = Data_tmp()
     
     app = QApplication([])
 
-    window = ImportWindow('/home/beekeeper/programming/lumTherm/')
+    window = ImportWindow('/home/beekeeper/programming/lumTherm/', holder)
     window.show()
 
     app.exec()
+
+    holder = window.holder
+
+    print(holder)
+

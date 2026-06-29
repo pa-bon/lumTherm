@@ -3,10 +3,7 @@ from PyQt6.QtWidgets import (
     QApplication, 
     QWidget, 
     QHBoxLayout, 
-    QLabel, 
-    QLineEdit, 
     QPushButton,
-    QFileDialog
 )
 
 class AddReplace(QWidget):
