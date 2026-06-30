@@ -33,7 +33,7 @@ class XAxis(QWidget):
         self.index = {
             'source':'co',           #take data from range or list
             'range':'',               #text seen by user
-            'co':[],                 #headings when source 'co' (column)
+            'co':0,                 #0 when first column is to be used, False when index comes from range
             'ra':[],                 #headings when source 'ra' (range)
         }
 
@@ -53,15 +53,17 @@ class XAxis(QWidget):
 
         #toggles
         self.radio_column = QRadioButton()
+        self.radio_column.setChecked(True)
         self.radio_column.toggled.connect(self.radio_column_toggled)
         index.addWidget(self.radio_column, 0, 0)
 
         self.radio_range = QRadioButton()
-        self.radio_range.setChecked(True)
+        self.radio_range.setChecked(False)
         self.radio_range.toggled.connect(self.radio_range_toggled)
         index.addWidget(self.radio_range, 1, 0)
 
         self.range_line = QLineEdit('')
+        self.range_line.setEnabled(False)
         self.range_line.textChanged.connect(self.range_changed)
         index.addWidget(self.range_line, 2, 1)
 
@@ -69,6 +71,7 @@ class XAxis(QWidget):
         '''Handels the event of selecting the column option'''
         if selected:
             self.index['source'] = 'co'
+            self.index['co'] = 0
             self.range_line.setEnabled(False)
             self.index_changed.emit()
 
@@ -76,6 +79,7 @@ class XAxis(QWidget):
         '''Handels the event of selecting the range option'''
         if selected:
             self.index['source'] = 'ra'
+            self.index['co'] = False
             self.range_line.setEnabled(True)
             self.index_changed.emit()
 

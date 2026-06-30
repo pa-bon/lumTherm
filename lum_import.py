@@ -48,13 +48,13 @@ class ImportWindow(QWidget):
         self.index = {
             'source':'co',           #take data from range or list
             'range':'',               #text seen by user
-            'co':[],                 #headings when source 'co' (column)
+            'co':0,                 #0 when first column is to be used, False when index comes from range
             'ra':[],                 #headings when source 'ra' (range)
         }
 
         #headings
         self.headings = {
-            'source':'ra',           #take data from range or list
+            'source':'ro',           #take data from range or list
             'range':'',             #text seen by user
             'list':'',              #text seen by user
             'ro':[],                #headings when source 'ro' (row)
@@ -133,6 +133,14 @@ class ImportWindow(QWidget):
     
     def update_index(self):
         self.index = self.Xaxis.index
+        self.read_text_file(self.path)
+
+        if self.index['source'] == 'ra':
+            if len(self.raw_data.index) == len(self.index['ra']):
+                self.raw_data.index = self.index['ra']
+            else:
+                self.raw_data.index = range(len(self.raw_data.index))
+    
         self.update_table(self.raw_data)
     
     def update_headings(self):
@@ -160,29 +168,22 @@ class ImportWindow(QWidget):
         try:
             #read_csv()
             with open(Path(path), 'r') as f:
-                if self.read_controls['uc']:     # use columns not empty
-                    self.raw_data = pd.read_csv(
-                        f, 
-                        sep=self.read_controls['delimiter'], 
-                        skiprows=self.read_controls['skr'],
-                        usecols=self.read_controls['uc'],
-                        header=0,
-                        index_col=0
-                    )
-                else:                           # use columns empty
-                    self.raw_data = pd.read_csv(
-                        f, 
-                        sep=self.read_controls['delimiter'], 
-                        skiprows=self.read_controls['skr'],
-                        header=0,
-                        index_col=0
-                    )
+                self.raw_data = pd.read_csv(
+                    f, 
+                    sep=self.read_controls['delimiter'], 
+                    skiprows=self.read_controls['skr'],
+                    usecols=self.read_controls['uc'],
+                    header=0,
+                    index_col=self.index['co']
+                )
+
             #when rows have difrent number of delimiters, they are treated as indexes for an empty column
             #this enshures that only proper (numerical) indexes are assigned
             assert float(self.raw_data.index[1])
             self.ImportMessage.setText('Message: file red')
                 
         except:
+            print('failed')
             #read file as lines
             try:
                 with open(Path(path), 'r') as f:
@@ -193,8 +194,12 @@ class ImportWindow(QWidget):
             except:
                 self.ImportMessage.setText('ERROR: Invalid file format. Use human-redable text file with UTC-8 encoding')
         
+        #delete empty columns
+        self.raw_data.dropna(how='all', axis=1, inplace=True)
+
+        #store headings
         self.Yaxis.headings['ro'] = self.raw_data.columns
-        self.Xaxis.headings['co'] = self.raw_data.index
+
         return self.raw_data
     
     def add_data(self):

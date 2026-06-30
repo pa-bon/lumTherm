@@ -31,7 +31,7 @@ class YAxis(QWidget):
 
         #controls
         self.headings = {
-            'source':'ra',           #take data from range or list
+            'source':'ro',           #take data from range or list
             'range':'',              #text seen by user
             'list':'',               #text seen by user
             'ro':[],                 #headings when source 'ro' (row)
@@ -56,15 +56,17 @@ class YAxis(QWidget):
 
         #toggles
         self.radio_row = QRadioButton()
+        self.radio_row.setChecked(True)
         self.radio_row.toggled.connect(self.radio_row_toggled)
         headings.addWidget(self.radio_row, 0, 0)
 
         self.radio_range = QRadioButton()
-        self.radio_range.setChecked(True)
+        self.radio_range.setChecked(False)
         self.radio_range.toggled.connect(self.radio_range_toggled)
         headings.addWidget(self.radio_range, 1, 0)
 
         self.radio_list = QRadioButton()
+        self.radio_list.setEnabled(False)
         self.radio_list.toggled.connect(self.radio_list_toggled)
         headings.addWidget(self.radio_list, 3, 0)
 

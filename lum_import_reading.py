@@ -39,7 +39,7 @@ class Reading(QWidget):
             'skip_rows':'',         #text seen by user
             'use_columns':'',       #text seen by user
             'skr':[],               #numbers of rows to skip
-            'uc':[]                 #numbers of columns to use
+            'uc':lambda x: True     #numbers of columns to use or callable returning always true when all are to be used
         }
 
 
@@ -96,6 +96,8 @@ class Reading(QWidget):
         mark_text_edit_error(self.use_columns_line, valid)
         if valid:
             self.read_controls['uc'] = uc
+            if not uc:  #if empty string, use all columns (callable returning always true)
+                self.read_controls['uc'] = lambda x: True
             self.reading_changed.emit()
 
 
