@@ -55,6 +55,7 @@ class ImportWindow(QWidget):
         
         #table widget
         self.Table = QTableView()
+        self.Table.setMinimumWidth(500)
         L2.addWidget(self.Table)
 
         #table data (model)
@@ -145,11 +146,10 @@ class ImportWindow(QWidget):
 
             #when rows have difrent number of delimiters, they are treated as indexes for an empty column
             #this enshures that only proper (numerical) indexes are assigned
-            assert float(self.raw_data.index[1])
+            #assert float(self.raw_data.index[1])
             self.ImportMessage.setText('Message: file red')
                 
         except:
-            print('failed')
             #read file as lines
             try:
                 with open(Path(path), 'r') as f:
@@ -170,11 +170,13 @@ class ImportWindow(QWidget):
     
     def add_data(self):
         '''Adds data in current view to the total'''
-        self.holder.add_data(self.raw_data)
+        mes = self.holder.add_data(self.raw_data)
+        self.ImportMessage.setText(mes)
     
     def replace_data(self):
         '''Replaces data from the current view in the total'''
-        self.holder.replace_data(self.raw_data)  
+        mes = self.holder.replace_data(self.raw_data)
+        self.ImportMessage.setText(mes)  
 
 
 #testing
@@ -190,6 +192,4 @@ if __name__ == '__main__':
     app.exec()
 
     holder = window.holder
-
-    print(holder)
 

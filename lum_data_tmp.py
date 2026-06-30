@@ -17,10 +17,10 @@ class Data_tmp():
             for column in list(other.columns.values):
                 if column not in list(self.data.columns.values):
                     self.data[column] = other[column]
-        return self.data
+        return 'Data added sucessfully'
     
     def replace_data(self, other):
         '''Adds data while replacing duplicated columns'''
         for column in list(other.columns.values):
             self.data[column] = other[column]
-        return self.data
+        return 'Data replaced sucessfully'
