@@ -94,12 +94,20 @@ if __name__ == '__main__':
     assert not phriser_list(12)
     print('...tests pased')
 
-def mark_line_edit_error(QLineEdit, condition):
-    '''Changes the background of QLineEdit widget to red when condition is false'''
-    if condition:
-        QLineEdit.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255)}""")
-    else:
-        QLineEdit.setStyleSheet("""QLineEdit { background-color: rgb(255, 200, 200)}""")
 
+def mark_text_edit_error(widget, condition):
+    '''Changes the background of TextEdit widget to red when condition is false'''
+    if condition:
+        widget.setStyleSheet("""
+                             QLineEdit { background-color: rgb(255, 255, 255)}
+                             QPlainTextEdit { background-color: rgb(255, 255, 255)}
+                             QTextEdit { background-color: rgb(255, 255, 255)}
+                             """)
+    else:
+        widget.setStyleSheet("""
+                             QLineEdit { background-color: rgb(255, 200, 200)}
+                             QPlainTextEdit { background-color: rgb(255, 200, 200)}
+                             QTextEdit { background-color: rgb(255, 200, 200)}
+                             """)
 #testing
     #pass

@@ -14,7 +14,7 @@ from lum_tools import (
     phriser,
     phriser_list,
     phriser_range,
-    mark_line_edit_error
+    mark_text_edit_error
 )
 
 class Reading(QWidget):
@@ -82,7 +82,7 @@ class Reading(QWidget):
         Will emit signal only when valid string is provided.'''
         self.read_controls['skip_rows'] = text
         valid, skr = phriser(text)
-        mark_line_edit_error(self.skip_rows_line, valid)
+        mark_text_edit_error(self.skip_rows_line, valid)
         if valid:
             self.read_controls['skr'] = skr
             self.reading_changed.emit()
@@ -93,7 +93,7 @@ class Reading(QWidget):
         Will emit signal only when valid string is provided.'''
         self.read_controls['use_columns'] = text
         valid, uc = phriser(text)
-        mark_line_edit_error(self.use_columns_line, valid)
+        mark_text_edit_error(self.use_columns_line, valid)
         if valid:
             self.read_controls['uc'] = uc
             self.reading_changed.emit()

@@ -14,9 +14,8 @@ from PyQt6.QtWidgets import (
 )
 from lum_import_browse import Browse
 from lum_import_add_data import AddReplace
-#from lum_import_table_control import TableControl
 from lum_import_reading import Reading
-from lum_import_headings import Headings
+from lum_import_yaxis import YAxis
 from lum_import_table import TableModel
 from lum_import_info import DataInfo
 from lum_data_tmp import Data_tmp
@@ -45,11 +44,12 @@ class ImportWindow(QWidget):
         }
         #headings
         self.headings = {
-            'source':'r',           #take data from range or list
+            'source':'ra',           #take data from range or list
             'range':'',             #text seen by user
             'list':'',              #text seen by user
-            'r':[],                 #headings when source 'r' (range)
-            'l':[]                  #headings when source 'l' (list)
+            'ro':[],                #headings when source 'ro' (row)
+            'ra':[],                 #headings when source 'ra' (range)
+            'li':[]                  #headings when source 'li' (list)
         }
 
         #raw_data
@@ -88,12 +88,12 @@ class ImportWindow(QWidget):
         L3.addWidget(self.DataInfo)
         self.Reading = Reading()
         L3.addWidget(self.Reading)
-        self.Headings = Headings()
-        L3.addWidget(self.Headings)
+        self.Yaxis = YAxis()
+        L3.addWidget(self.Yaxis)
         L2.addLayout(L3)
 
         self.Reading.reading_changed.connect(self.update_reading)
-        self.Headings.headings_changed.connect(self.update_headings)
+        self.Yaxis.headings_changed.connect(self.update_headings)
 
         #add and replace tab
         self.AddReplace = AddReplace()
@@ -120,10 +120,12 @@ class ImportWindow(QWidget):
     
     def update_headings(self):
         '''Handels the event of headings changing'''
-        self.headings = self.Headings.headings
+        self.headings = self.Yaxis.headings
         headings_list = self.headings[self.headings['source']]
         if len(headings_list) == len(self.raw_data.columns):
             self.raw_data.columns = headings_list
+        
+        #update table
         self.update_table(self.raw_data)
     
     def update_table(self, data):
@@ -171,6 +173,8 @@ class ImportWindow(QWidget):
             #all hope lost
             except:
                 self.ImportMessage.setText('ERROR: Invalid file format. Use human-redable text file with UTC-8 encoding')
+        
+        self.Yaxis.headings['ro'] = self.raw_data.columns
         return self.raw_data
     
     def add_data(self):
