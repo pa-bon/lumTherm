@@ -1,14 +1,9 @@
 
-from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import (
     QApplication, 
     QWidget, 
     QVBoxLayout,
-    QGridLayout, 
-    QLabel, 
-    QLineEdit,
-    QRadioButton,
-    QPlainTextEdit,
+    QLabel,
     QGroupBox
 )
 

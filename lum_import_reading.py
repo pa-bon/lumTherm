@@ -6,14 +6,10 @@ from PyQt6.QtWidgets import (
     QGridLayout, 
     QLabel, 
     QLineEdit,
-    QRadioButton,
-    QPlainTextEdit,
     QGroupBox
 )
 from lum_tools import (
     phriser,
-    phriser_list,
-    phriser_range,
     mark_text_edit_error
 )
 

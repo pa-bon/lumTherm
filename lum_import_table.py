@@ -1,6 +1,6 @@
 #source: https://www.pythonguis.com/tutorials/pyqt6-qtableview-modelviews-numpy-pandas/
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import Qt
 import pandas as pd
 

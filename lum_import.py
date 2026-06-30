@@ -1,11 +1,9 @@
 import pandas as pd
-import numpy as np
 
 from pathlib import Path
 
 from PyQt6.QtWidgets import (
     QApplication,
-    QMainWindow, 
     QWidget, 
     QHBoxLayout,
     QVBoxLayout,
@@ -15,8 +13,8 @@ from PyQt6.QtWidgets import (
 from lum_import_browse import Browse
 from lum_import_add_data import AddReplace
 from lum_import_reading import Reading
-from lum_import_yaxis import YAxis
-from lum_import_xaxis import XAxis
+from lum_import_headings import HeadingsSettings
+from lum_import_indexes import IndexesSettings
 from lum_import_table import TableModel
 from lum_import_info import DataInfo
 from lum_data_tmp import Data_tmp
@@ -33,35 +31,6 @@ class ImportWindow(QWidget):
         self.path = path
         #data holder
         self.holder = holder
-
-
-        #controls
-        self.read_controls = {
-            'delimiter':',',        #delimiter
-            'skip_rows':'',         #text seen by user
-            'skip_columns':'',      #text seen by user
-            'skr':[],               #numbers of rows to skip
-            'uc':[]                 #numbers of columns to use
-        }
-
-        #controls
-        self.index = {
-            'source':'co',           #take data from range or list
-            'range':'',               #text seen by user
-            'co':0,                 #0 when first column is to be used, False when index comes from range
-            'ra':[],                 #headings when source 'ra' (range)
-        }
-
-        #headings
-        self.headings = {
-            'source':'ro',           #take data from range or list
-            'range':'',             #text seen by user
-            'list':'',              #text seen by user
-            'ro':[],                #headings when source 'ro' (row)
-            'ra':[],                 #headings when source 'ra' (range)
-            'li':[]                  #headings when source 'li' (list)
-        }
-
         #raw_data
         self.raw_data = pd.DataFrame()
         
@@ -98,15 +67,15 @@ class ImportWindow(QWidget):
         L3.addWidget(self.DataInfo)
         self.Reading = Reading()
         L3.addWidget(self.Reading)
-        self.Xaxis = XAxis()
-        L3.addWidget(self.Xaxis)
-        self.Yaxis = YAxis()
-        L3.addWidget(self.Yaxis)
+        self.Indexes = IndexesSettings()
+        L3.addWidget(self.Indexes)
+        self.Headings = HeadingsSettings()
+        L3.addWidget(self.Headings)
         L2.addLayout(L3)
 
         self.Reading.reading_changed.connect(self.update_reading)
-        self.Xaxis.index_changed.connect(self.update_index)
-        self.Yaxis.headings_changed.connect(self.update_headings)
+        self.Indexes.index_changed.connect(self.update_index)
+        self.Headings.headings_changed.connect(self.update_headings)
 
         #add and replace tab
         self.AddReplace = AddReplace()
@@ -127,17 +96,15 @@ class ImportWindow(QWidget):
 
     def update_reading(self):
         '''Handels the event of reding controls chaneging'''
-        self.read_controls = self.Reading.read_controls
         self.read_text_file(self.path)
         self.update_table(self.raw_data)
     
     def update_index(self):
-        self.index = self.Xaxis.index
         self.read_text_file(self.path)
 
-        if self.index['source'] == 'ra':
-            if len(self.raw_data.index) == len(self.index['ra']):
-                self.raw_data.index = self.index['ra']
+        if self.Indexes.indexes_settings['source'] == 'ra':
+            if len(self.raw_data.index) == len(self.Indexes.indexes_settings['ra']):
+                self.raw_data.index = self.Indexes.indexes_settings['ra']
             else:
                 self.raw_data.index = range(len(self.raw_data.index))
     
@@ -145,8 +112,7 @@ class ImportWindow(QWidget):
     
     def update_headings(self):
         '''Handels the event of headings changing'''
-        self.headings = self.Yaxis.headings
-        headings_list = self.headings[self.headings['source']]
+        headings_list = self.Headings.headings_settings[self.Headings.headings_settings['source']]
         if len(headings_list) == len(self.raw_data.columns):
             self.raw_data.columns = headings_list
         
@@ -170,11 +136,11 @@ class ImportWindow(QWidget):
             with open(Path(path), 'r') as f:
                 self.raw_data = pd.read_csv(
                     f, 
-                    sep=self.read_controls['delimiter'], 
-                    skiprows=self.read_controls['skr'],
-                    usecols=self.read_controls['uc'],
+                    sep=self.Reading.read_controls['delimiter'], 
+                    skiprows=self.Reading.read_controls['skr'],
+                    usecols=self.Reading.read_controls['uc'],
                     header=0,
-                    index_col=self.index['co']
+                    index_col=self.Indexes.indexes_settings['co']
                 )
 
             #when rows have difrent number of delimiters, they are treated as indexes for an empty column
@@ -198,7 +164,7 @@ class ImportWindow(QWidget):
         self.raw_data.dropna(how='all', axis=1, inplace=True)
 
         #store headings
-        self.Yaxis.headings['ro'] = self.raw_data.columns
+        self.Headings.headings_settings['ro'] = self.raw_data.columns
 
         return self.raw_data
     

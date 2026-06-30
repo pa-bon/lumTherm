@@ -11,13 +11,12 @@ from PyQt6.QtWidgets import (
     QGroupBox
 )
 from lum_tools import (
-    phriser,
     phriser_list,
     phriser_range,
     mark_text_edit_error
 )
 
-class YAxis(QWidget):
+class HeadingsSettings(QWidget):
     '''Add or replace existing data'''
     
     #custom signals
@@ -30,7 +29,7 @@ class YAxis(QWidget):
         self.setMaximumWidth(250)
 
         #controls
-        self.headings = {
+        self.headings_settings = {
             'source':'ro',           #take data from range or list
             'range':'',              #text seen by user
             'list':'',               #text seen by user
@@ -40,49 +39,50 @@ class YAxis(QWidget):
         }
 
         #main layout
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        L0 = QVBoxLayout()
+        self.setLayout(L0)
 
         #defining headings section
         headings_box = QGroupBox('Y axis (column names)')
-        layout.addWidget(headings_box)
-        headings = QGridLayout()
-        headings_box.setLayout(headings)
+        L0.addWidget(headings_box)
+        L = QGridLayout()
+        headings_box.setLayout(L)
 
         #labels
-        headings.addWidget(QLabel('First row'), 0, 1)
-        headings.addWidget(QLabel('Range (start, stop, step)'), 1, 1)
-        headings.addWidget(QLabel('List (number, number, ...)'), 3, 1)
+        L.addWidget(QLabel('First row'), 0, 1)
+        L.addWidget(QLabel('Range (start, stop, step)'), 1, 1)
+        L.addWidget(QLabel('List (number, number, ...)'), 3, 1)
 
         #toggles
         self.radio_row = QRadioButton()
         self.radio_row.setChecked(True)
         self.radio_row.toggled.connect(self.radio_row_toggled)
-        headings.addWidget(self.radio_row, 0, 0)
+        L.addWidget(self.radio_row, 0, 0)
 
         self.radio_range = QRadioButton()
         self.radio_range.setChecked(False)
         self.radio_range.toggled.connect(self.radio_range_toggled)
-        headings.addWidget(self.radio_range, 1, 0)
+        L.addWidget(self.radio_range, 1, 0)
 
         self.radio_list = QRadioButton()
-        self.radio_list.setEnabled(False)
+        self.radio_list.setChecked(False)
         self.radio_list.toggled.connect(self.radio_list_toggled)
-        headings.addWidget(self.radio_list, 3, 0)
+        L.addWidget(self.radio_list, 3, 0)
 
         self.range_line = QLineEdit('')
+        self.range_line.setEnabled(False)
         self.range_line.textChanged.connect(self.range_changed)
-        headings.addWidget(self.range_line, 2, 1)
+        L.addWidget(self.range_line, 2, 1)
 
         self.list_line = QPlainTextEdit('')
         self.list_line.setEnabled(False)
         self.list_line.textChanged.connect(self.list_changed)
-        headings.addWidget(self.list_line, 4, 1)
+        L.addWidget(self.list_line, 4, 1)
 
     def radio_row_toggled(self, selected):
         '''Handels the event of selecting the row option'''
         if selected:
-            self.headings['source'] = 'ro'
+            self.headings_settings['source'] = 'ro'
             self.range_line.setEnabled(False)
             self.list_line.setEnabled(False)
             self.headings_changed.emit()
@@ -90,7 +90,7 @@ class YAxis(QWidget):
     def radio_range_toggled(self, selected):
         '''Handels the event of selecting the range option'''
         if selected:
-            self.headings['source'] = 'ra'
+            self.headings_settings['source'] = 'ra'
             self.range_line.setEnabled(True)
             self.list_line.setEnabled(False)
             self.headings_changed.emit()
@@ -98,7 +98,7 @@ class YAxis(QWidget):
     def radio_list_toggled(self, selected):
         '''Handels the event of selecting the list option'''
         if selected:
-            self.headings['source'] = 'li'
+            self.headings_settings['source'] = 'li'
             self.range_line.setEnabled(False)
             self.list_line.setEnabled(True)
             self.headings_changed.emit()
@@ -111,14 +111,14 @@ class YAxis(QWidget):
         overriding what is already there.
         
         Will emit signal only when valid string is provided.'''
-        self.headings['range'] = text
+        self.headings_settings['range'] = text
         ra = phriser_range(text)
         mark_text_edit_error(self.range_line, bool(ra))
         if ra:
             list = ', '.join([str(i) for i in ra])
-            self.headings['ra'] = ra
-            self.headings['li'] = ra
-            self.headings['list'] = list
+            self.headings_settings['ra'] = ra
+            self.headings_settings['li'] = ra
+            self.headings_settings['list'] = list
             self.list_line.setPlainText(list)
             self.headings_changed.emit()
 
@@ -127,11 +127,11 @@ class YAxis(QWidget):
         
         Will emit signal only when valid string is provided.'''
         text = self.list_line.toPlainText().replace('\n', '')
-        self.headings['list'] = text
+        self.headings_settings['list'] = text
         li = phriser_list(text)
         mark_text_edit_error(self.list_line, bool(li))
         if li:
-            self.headings['li'] = li
+            self.headings_settings['li'] = li
             self.headings_changed.emit()
 
 
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     
     app = QApplication([])
 
-    window = YAxis()
+    window = HeadingsSettings()
     window.show()
 
     app.exec()
