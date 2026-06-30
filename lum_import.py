@@ -16,6 +16,7 @@ from lum_import_browse import Browse
 from lum_import_add_data import AddReplace
 from lum_import_reading import Reading
 from lum_import_yaxis import YAxis
+from lum_import_xaxis import XAxis
 from lum_import_table import TableModel
 from lum_import_info import DataInfo
 from lum_data_tmp import Data_tmp
@@ -42,6 +43,15 @@ class ImportWindow(QWidget):
             'skr':[],               #numbers of rows to skip
             'uc':[]                 #numbers of columns to use
         }
+
+        #controls
+        self.index = {
+            'source':'co',           #take data from range or list
+            'range':'',               #text seen by user
+            'co':[],                 #headings when source 'co' (column)
+            'ra':[],                 #headings when source 'ra' (range)
+        }
+
         #headings
         self.headings = {
             'source':'ra',           #take data from range or list
@@ -88,11 +98,14 @@ class ImportWindow(QWidget):
         L3.addWidget(self.DataInfo)
         self.Reading = Reading()
         L3.addWidget(self.Reading)
+        self.Xaxis = XAxis()
+        L3.addWidget(self.Xaxis)
         self.Yaxis = YAxis()
         L3.addWidget(self.Yaxis)
         L2.addLayout(L3)
 
         self.Reading.reading_changed.connect(self.update_reading)
+        self.Xaxis.index_changed.connect(self.update_index)
         self.Yaxis.headings_changed.connect(self.update_headings)
 
         #add and replace tab
@@ -116,6 +129,10 @@ class ImportWindow(QWidget):
         '''Handels the event of reding controls chaneging'''
         self.read_controls = self.Reading.read_controls
         self.read_text_file(self.path)
+        self.update_table(self.raw_data)
+    
+    def update_index(self):
+        self.index = self.Xaxis.index
         self.update_table(self.raw_data)
     
     def update_headings(self):
@@ -149,16 +166,18 @@ class ImportWindow(QWidget):
                         sep=self.read_controls['delimiter'], 
                         skiprows=self.read_controls['skr'],
                         usecols=self.read_controls['uc'],
-                        header=0
+                        header=0,
+                        index_col=0
                     )
                 else:                           # use columns empty
                     self.raw_data = pd.read_csv(
                         f, 
                         sep=self.read_controls['delimiter'], 
                         skiprows=self.read_controls['skr'],
-                        header=0
+                        header=0,
+                        index_col=0
                     )
-            #when rows have difren number of delimiter, they are treated as indexes for an empty column
+            #when rows have difrent number of delimiters, they are treated as indexes for an empty column
             #this enshures that only proper (numerical) indexes are assigned
             assert float(self.raw_data.index[1])
             self.ImportMessage.setText('Message: file red')
@@ -175,6 +194,7 @@ class ImportWindow(QWidget):
                 self.ImportMessage.setText('ERROR: Invalid file format. Use human-redable text file with UTC-8 encoding')
         
         self.Yaxis.headings['ro'] = self.raw_data.columns
+        self.Xaxis.headings['co'] = self.raw_data.index
         return self.raw_data
     
     def add_data(self):

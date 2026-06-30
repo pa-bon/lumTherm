@@ -11,7 +11,7 @@ def phriser(text: str):
     '''
     results = []
     if text == '':      #handels empty string
-        return True, results
+        return True, []
     else:
         try:
             contents = [i.replace(' ','') for i in text.split(',')]
@@ -29,11 +29,15 @@ def phriser(text: str):
 if __name__ == '__main__':
     
     print('Testing phriser()...')
-    assert phriser('1,2,3,4') == [1,2,3,4]
-    assert phriser('1, 2-4') == [1,2,3,4]
+    assert phriser('1,2,3,4') == (True, [1,2,3,4])
+    assert phriser('1, 2-4') == (True, [1,2,3,4])
     assert phriser('1')
-    assert not phriser('1, s2-4')
-    assert not phriser(12)
+    assert not phriser('1, s2-4')[0]
+    assert not phriser('1, s2-4')[1]
+    assert not phriser(12)[0]
+    assert not phriser(12)[1]
+    assert phriser('')[0]
+    assert not phriser('')[1]
     print('...tests pased')
 
 
@@ -48,7 +52,9 @@ def phriser_range(text: str):
     results = []
     try:
         [start, stop, step] = [float(i.replace(' ','')) for i in  text.split(',')]
-        results += [float(n) for n in np.arange(start, stop+step, step)]
+        num = ((stop-start)/step) + 1
+        assert abs(num-int(num)) < 0.0001 #int() rounds to the nearest integer, this allows only for true integers
+        results = [round(float(n), 4) for n in np.linspace(start, stop, int(num))]
         assert results[-1] == stop
         return results
     except:
@@ -60,6 +66,7 @@ if __name__ == '__main__':
     print('Testing phriser_range()...')
     assert phriser_range('100,200,50') == [100,150,200]
     assert phriser_range('1,2,0.5') == [1.,1.5,2.]
+    assert phriser_range('1,2,0.2') == [1.,1.2,1.4,1.6,1.8,2.]
     assert not phriser_range('1')
     assert not phriser_range('w')
     assert not phriser_range('1,2,0.3')

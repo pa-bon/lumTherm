@@ -14,7 +14,6 @@ from lum_tools import (
     phriser,
     phriser_list,
     phriser_range,
-    mark_line_edit_error,
     mark_text_edit_error
 )
 
