@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import (
     QSlider
 )
 
-from lum_plot_ratios import RatiosPlot
+from lum_plot_sensitivity import RatiosPlot
 from lum_data_tmp import Data_tmp
 
 class PlotRatiosTab(QWidget):
@@ -46,6 +46,7 @@ class PlotRatiosTab(QWidget):
     def slider_moved(self, num):
         '''Handels the event of changing the slider position'''
         self.ratios_plot.redraw(self.ratios, num)
+        print(self.ratios[56,80,:])
 
 
 #testing

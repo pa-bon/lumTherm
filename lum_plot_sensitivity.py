@@ -28,7 +28,7 @@ class MplCanvas(FigureCanvasQTAgg):
         super().__init__(fig)
 
 
-class SensitivityPlot(QtWidgets.QWidget):
+class RatiosPlot(QtWidgets.QWidget):
 
     def __init__(self, data: np.array, slice=-1):
         super().__init__()
@@ -38,10 +38,10 @@ class SensitivityPlot(QtWidgets.QWidget):
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
 
         # plot
-        self.plot = self.sc.axes.imshow(data[:,:,slice], aspect=1, interpolation='nearest', cmap='managua_r', norm='log')
+        self.plot = self.sc.axes.imshow(data[:,:,slice], aspect=1, interpolation='nearest', cmap='managua_r')
 
         # setup the colorbar
-        self.sc.figure.colorbar(self.plot, ax=self.sc.axes)
+        self.colorbar = self.sc.figure.colorbar(self.plot, ax=self.sc.axes)
 
         # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
         toolbar = NavigationToolbar(self.sc, self)
@@ -51,13 +51,15 @@ class SensitivityPlot(QtWidgets.QWidget):
         layout.addWidget(self.sc)
         self.setLayout(layout)
     
-    def redraw(self, data, slice):
+    def redraw(self, data: np.array, slice):
         try:
             #clear plot
             self.sc.axes.cla()
 
             #plot
-            self.plot = self.sc.axes.imshow(data[:,:,slice], aspect=1, interpolation='nearest', cmap='managua_r', norm='log')
+            self.plot = self.sc.axes.imshow(data[:,:,slice], aspect=1, interpolation='nearest', cmap='managua_r')
+            
+            self.colorbar.mappable.set_clim(data[:,:,slice].min(), data[:,:,slice].max())
 
             self.sc.draw()
 
@@ -84,10 +86,10 @@ if __name__ == '__main__':
 
     holder = Data_tmp()
     holder.add_data(data)
-    sensitivity = holder.calculate_sensitivity()
+    ratios = holder.calculate_sensitivity()
 
 
-    w = SensitivityPlot(sensitivity)
+    w = RatiosPlot(ratios)
     w.show()
 
     app.exec()      

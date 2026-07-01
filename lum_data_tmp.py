@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.signal import savgol_filter
+from scipy.ndimage import gaussian_filter
 
 class Data_tmp():
     """Placeholder class to develop import window"""
@@ -44,8 +44,9 @@ class Data_tmp():
     
     def calculate_sensitivity(self):
         self.calculate_ratios()
-        self.sensitivity = np.gradient(self.ratios, self.data.columns, axis=2).__abs__()
-        #self.sensitivity = derivative.__abs__() / self.ratios
+        derivative = np.gradient(self.ratios, self.data.columns, axis=2).__abs__()
+        crude_sensitivity = derivative.__abs__() / self.ratios
+        self.sensitivity = gaussian_filter(crude_sensitivity, sigma=0.5, axes=(0,1), radius=(5,5))
         return self.sensitivity
 
 

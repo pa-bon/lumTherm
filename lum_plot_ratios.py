@@ -41,7 +41,7 @@ class RatiosPlot(QtWidgets.QWidget):
         self.plot = self.sc.axes.imshow(data[:,:,slice], aspect=1, interpolation='nearest', cmap='managua_r', norm='log')
 
         # setup the colorbar
-        self.sc.figure.colorbar(self.plot, ax=self.sc.axes)
+        self.colorbar = self.sc.figure.colorbar(self.plot, ax=self.sc.axes)
 
         # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
         toolbar = NavigationToolbar(self.sc, self)
@@ -51,13 +51,15 @@ class RatiosPlot(QtWidgets.QWidget):
         layout.addWidget(self.sc)
         self.setLayout(layout)
     
-    def redraw(self, data, slice):
+    def redraw(self, data: np.array, slice):
         try:
             #clear plot
             self.sc.axes.cla()
 
             #plot
             self.plot = self.sc.axes.imshow(data[:,:,slice], aspect=1, interpolation='nearest', cmap='managua_r', norm='log')
+            
+            self.colorbar.mappable.set_clim(data[:,:,slice].min(), data[:,:,slice].max())
 
             self.sc.draw()
 
