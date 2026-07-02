@@ -30,15 +30,29 @@ class MplCanvas(FigureCanvasQTAgg):
 
 class RatiosPlot(QtWidgets.QWidget):
 
-    def __init__(self, data: np.array, slice=-1):
+    def __init__(self, data: np.array, slice=-1, xvalues=[]):
         super().__init__()
+
+        try:        
+            (xmin, xmax) = (min(xvalues), max(xvalues))
+        except:
+            (xmin, xmax) = (0, data.shape[0])
 
         # Create the maptlotlib FigureCanvas object,
         # which defines a single set of axes as self.axes.
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
 
         # plot
-        self.plot = self.sc.axes.imshow(data[:,:,slice], aspect=1, interpolation='nearest', cmap='managua_r', norm='log')
+        self.plot = self.sc.axes.imshow(
+            data[:,:,slice], 
+            aspect=1, 
+            interpolation='nearest', 
+            cmap='managua_r', 
+            norm='log', 
+            extent=(xmin, xmax, xmin, xmax), 
+            origin='lower'
+            )
+        self.sc.axes.set(xlim=(xmin, xmax), ylim=(xmin, xmax))
 
         # setup the colorbar
         self.colorbar = self.sc.figure.colorbar(self.plot, ax=self.sc.axes)
@@ -89,7 +103,7 @@ if __name__ == '__main__':
     ratios = holder.calculate_ratios()
 
 
-    w = RatiosPlot(ratios)
+    w = RatiosPlot(ratios, xvalues=holder.data.index)
     w.show()
 
     app.exec()      
