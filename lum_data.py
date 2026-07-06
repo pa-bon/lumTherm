@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 from scipy.ndimage import gaussian_filter
 
-class Data_tmp():
-    """Placeholder class to develop import window"""
+class DataHolder():
+    """Class for data prosessing and storage"""
 
     def __init__(self):
         self.data = pd.DataFrame()
@@ -24,15 +24,13 @@ class Data_tmp():
         return 'Data added sucessfully'
     
     def replace_data(self, other):
+        '''Replaces old data with new data'''
         self.data = other
         return 'Data updated'
-
-        #'''Adds data while replacing duplicated columns'''
-        #for column in list(other.columns.values):
-        #    self.data[column] = other[column]
-        #return 'Data replaced sucessfully'
     
     def calculate_ratios(self):
+        '''Calculate intensity ratios'''
+
         intesities = self.data.to_numpy(dtype='float32')
 
         A = intesities[:,None,:]
@@ -44,17 +42,21 @@ class Data_tmp():
         return self.ratios
     
     def calculate_sensitivity(self):
+        '''Calculate relative sensitivity'''
+        
         self.calculate_ratios()
         derivative = np.gradient(self.ratios, self.data.columns, axis=2).__abs__()
-        crude_sensitivity = derivative.__abs__() * 100 / self.ratios
-        self.sensitivity = gaussian_filter(crude_sensitivity, sigma=0.5, axes=(0,1), radius=(5,5))
+        
+        #smoothing to even-out noise
+        smoothed_derivative = gaussian_filter(derivative, sigma=1, axes=(0,1))
+        
+        self.sensitivity = smoothed_derivative.__abs__() * 100 / self.ratios
         return self.sensitivity
         
 
-
 if __name__ == '__main__':
 
-    data = Data_tmp()
+    data = DataHolder()
 
     input = pd.DataFrame([[1,2], [1,2], [1,2]])
     print(input)

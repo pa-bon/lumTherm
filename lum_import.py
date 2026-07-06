@@ -15,13 +15,12 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import pyqtSignal
 
 from lum_import_browse import Browse
-#from lum_import_add_data import AddReplace
 from lum_import_reading import Reading
 from lum_import_headings import HeadingsSettings
 from lum_import_indexes import IndexesSettings
 from lum_import_table import TableModel
 from lum_import_info import DataInfo
-from lum_data_tmp import Data_tmp
+from lum_data import DataHolder
 
 
 class ImportWindow(QWidget):
@@ -85,15 +84,9 @@ class ImportWindow(QWidget):
         self.Headings.headings_changed.connect(self.update_headings)
 
         #apply tab
-        #self.AddReplace = AddReplace()
-        #L.addWidget(self.AddReplace)
-
-        #self.AddReplace.add_signal.connect(self.add_data)
-        #self.AddReplace.repalce_signal.connect(self.replace_data)
         apply_button = QPushButton("Apply")
         apply_button.clicked.connect(self.replace_data)
         L.addWidget(apply_button)
-
 
         #message lable
         self.ImportMessage = QLabel('Messages: none')
@@ -111,6 +104,7 @@ class ImportWindow(QWidget):
         self.update_table(self.raw_data)
     
     def update_index(self):
+        '''Handels the event of index (x values) changing'''
         self.read_text_file(self.path)
 
         if self.Indexes.indexes_settings['source'] == 'ra':
@@ -154,9 +148,6 @@ class ImportWindow(QWidget):
                     index_col=self.Indexes.indexes_settings['co']
                 )
 
-            #when rows have difrent number of delimiters, they are treated as indexes for an empty column
-            #this enshures that only proper (numerical) indexes are assigned
-            #assert float(self.raw_data.index[1])
             self.ImportMessage.setText('Message: file red')
                 
         except:
@@ -178,11 +169,6 @@ class ImportWindow(QWidget):
 
         return self.raw_data
     
-    #def add_data(self):
-    #    '''Adds data in current view to the total'''
-    #    mes = self.holder.add_data(self.raw_data)
-    #    self.ImportMessage.setText(mes)
-    
     def replace_data(self):
         '''Replaces data from the current view in the total'''
         mes = self.holder.replace_data(self.raw_data)
@@ -193,7 +179,7 @@ class ImportWindow(QWidget):
 #testing
 if __name__ == '__main__':
 
-    holder = Data_tmp()
+    holder = DataHolder()
     
     app = QApplication([])
 

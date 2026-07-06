@@ -8,49 +8,66 @@ from PyQt6.QtWidgets import (
     QWidget, 
     QVBoxLayout,
     QHBoxLayout,
-    QGridLayout, 
-    QLabel, 
-    QLineEdit,
-    QGroupBox,
+    QLabel,
     QSlider
 )
 
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
+
 import numpy as np
 
 class MplCanvas(FigureCanvasQTAgg):
     """Menages general plot styles"""
+    
     def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
-        self.axes.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
-        self.axes.yaxis.major.formatter._useMathText = True
-        self.axes.xaxis.major.formatter._useMathText = True
+        
+        #create figure
+        fig = Figure(
+            layout='constrained',
+            figsize=(width, height),
+            dpi=dpi
+            )
+
+        #add main axis (for heatmap)
+        self.ax = fig.add_subplot()
+
+        #add aditional axis for line plots
+        self.ax_A = self.ax.inset_axes([0, 1.05, 1, 0.25], sharex=self.ax)
+        self.ax_B = self.ax.inset_axes([1.05, 0, 0.25, 1], sharey=self.ax)
+
+        #costumise appreance
+        self.ax_A.tick_params(axis="both", labelbottom=False, left=False, labelleft=False)
+        self.ax_B.tick_params(axis="both", labelleft=False, bottom=False, labelbottom=False)
+        self.ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
+        self.ax.yaxis.major.formatter._useMathText = True
+        self.ax.xaxis.major.formatter._useMathText = True
+        
         super().__init__(fig)
 
 class Heatmap(QWidget):
-    """Manages the imshow() plot of a square, 2D np.array."""
+    """Manages the imshow() plot of a square, 2D np.array, with line plots along both axes"""
 
-    def __init__(self, data: np.array, xvalues=[]):
+    def __init__(self, data: np.array, line: np.array, line_color='blue', xvalues=[]):
         super().__init__()
 
         #determine limits of axes
         try:        
             (xmin, xmax) = (min(xvalues), max(xvalues))
+            self.xvalues = xvalues
         except:
             (xmin, xmax) = (0, data.shape[0])
+            self.xvalues = range(xmax)
 
-        # Create the maptlotlib FigureCanvas object,
-        # which defines a single set of axes as self.axes.
-        self.sc = MplCanvas(self, width=6, height=5, dpi=100)
+        # Create the maptlotlib FigureCanvas object
+        self.sc = MplCanvas(self, width=8, height=7, dpi=100)
+        self.sc.mpl_connect('motion_notify_event', self.mouse_moved_on_plot)
 
-        # plot
-        self.plot = self.sc.axes.imshow(
+        # plot heatmap
+        self.plot = self.sc.ax.imshow(
             data, 
             aspect=1, 
             interpolation='nearest', 
@@ -61,35 +78,63 @@ class Heatmap(QWidget):
             )
         
         #update the axis range
-        self.sc.axes.set(xlim=(xmin, xmax), ylim=(xmax, xmin))
+        self.sc.ax.set(xlim=(xmin, xmax), ylim=(xmax, xmin))
+
+        #plot lines (plot returns a list)
+        [self.lineA] = self.sc.ax_A.plot(xvalues, line, color=line_color)
+        [self.lineB] = self.sc.ax_B.plot(line, xvalues, color=line_color)
+
+        #plot position indicators
+        self.vline = self.sc.ax_A.axvline(xmin)
+        self.hline = self.sc.ax_B.axhline(xmin)
 
         # setup the colorbar
-        self.colorbar = self.sc.figure.colorbar(self.plot, ax=self.sc.axes)
+        self.colorbar = self.sc.figure.colorbar(self.plot, ax=self.sc.ax)
 
         #create toolbar, passing canvas as first parament, parent (self) as second.
         toolbar = NavigationToolbar(self.sc, self)
 
+        #display toolbar above the plot
         L = QVBoxLayout()
         L.addWidget(toolbar)
         L.addWidget(self.sc)
         self.setLayout(L)
+
+    def mouse_moved_on_plot(self, event):
+        """Handles the event of mous moveng across the heatmap.
+        
+        Changes postion of markings on the subplots"""
+        if event.inaxes:
+            self.vline.set_xdata([event.xdata, event.xdata])
+            self.hline.set_ydata([event.ydata, event.ydata])
+            self.sc.figure.canvas.draw_idle()
     
-    def redraw(self, data: np.array):
+    def redraw(self, data: np.array, line: np.array, line_color):
+        """Redraws the plot with new data"""
         try:
-            #update data
+            #update data on heatmap
             self.plot.set_data(data)
+            
+            #update data on line plots
+            self.lineA.set(ydata=line, color=line_color)
+            self.sc.ax_A.set_ylim(line.min(), line.max())
+            
+            self.lineB.set(xdata=line, color=line_color)
+            self.sc.ax_B.set_xlim(line.min(), line.max())
             
             #adjust colrbar
             self.colorbar.mappable.set_clim(data.min(), data.max())
 
             #redraw
-            self.sc.draw()
+            self.sc.figure.canvas.draw_idle()
 
-            return 'Plot updated'
-        
-        except TypeError:
+            return 'Redraw sucessfull'
 
-            return 'Plot update failed: invalid column headings'
+        except:
+            
+            return 'Redraw failed'
+
+
 
 class HeatmapWithSlider(QWidget):
     """A heatmap with an interactive slider.
@@ -97,11 +142,12 @@ class HeatmapWithSlider(QWidget):
     The slider selcts a 2D slice from a 3D np.array for plotting. 
     The shape of the 3D array must be (n, n, m), so tht the 2D slices will be square"""
 
-    def __init__(self, data: np.array, xvalues=[], zvalues=[]):
+    def __init__(self, data: np.array, lines: np.array, xvalues=[], zvalues=[]):
         super().__init__()
 
         self.zvalues = zvalues
         self.data = data
+        self.lines = lines
 
         #determine limits of z axis
         try:        
@@ -110,19 +156,30 @@ class HeatmapWithSlider(QWidget):
             (zmin, zmax) = (0, data.shape[2])
             self.zvalues = range(zmax)
 
+        #preprae colormap for line plots
+        self.normalize = mcolors.Normalize(vmin=zmin, vmax=zmax)
+        self.colormap = cm.managua_r
+
         #main layout
         L0 = QVBoxLayout()
         self.setLayout(L0)
 
-        self.heatmap = Heatmap(self.data[:,:,0], xvalues=xvalues)
+        #add the heatmap
+        self.heatmap = Heatmap(
+            self.data[:,:,0], 
+            self.lines[:,0], 
+            self.colormap(self.normalize(self.zvalues[0])), 
+            xvalues=xvalues)
         L0.addWidget(self.heatmap)
 
+        #preper slicer bar
         L1 = QHBoxLayout()
         L1.addWidget(QLabel(str(zmin)))
 
+        #set up horizotal slicer
         slider = QSlider(orientation=Qt.Orientation.Horizontal)
-        slider.setMaximum(0)
-        slider.setMaximum(len(holder.data.columns)-1)
+        slider.setMinimum(0)
+        slider.setMaximum(data.shape[2]-1)
         slider.valueChanged.connect(self.value_changed)
 
         L1.addWidget(slider)
@@ -137,14 +194,20 @@ class HeatmapWithSlider(QWidget):
   
     def value_changed(self, num):
         '''Handels the event of changing the slider position'''
-        self.heatmap.redraw(self.data[:,:,num])
+        self.heatmap.redraw(
+            self.data[:,:,num], 
+            self.lines[:,num], 
+            self.colormap(self.normalize(self.zvalues[num]))
+            )
         self.slice_label.setText(f'Current: {self.zvalues[num]}')
+
+
 
 if __name__ == '__main__':
 
     from pathlib import Path
     import pandas as pd
-    from lum_data_tmp import Data_tmp
+    from lum_data import DataHolder
 
     app = QApplication([])
 
@@ -161,13 +224,15 @@ if __name__ == '__main__':
 
     data.columns = list(range(340, 0, -10))
 
-    holder = Data_tmp()
+    holder = DataHolder()
     holder.add_data(data)
     holder.data.sort_index(axis=1, inplace=True)
+    lines = holder.data.to_numpy()
+    
     ratios = holder.calculate_sensitivity()
 
 
-    w = HeatmapWithSlider(ratios, xvalues=holder.data.index, zvalues=holder.data.columns)
+    w = HeatmapWithSlider(ratios, lines, xvalues=holder.data.index, zvalues=holder.data.columns)
     w.show()
 
     app.exec()      

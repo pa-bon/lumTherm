@@ -2,22 +2,18 @@ import os
 
 os.environ["QT_API"] = "PyQt6"
 
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtWidgets
 
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
-import numpy as np
-
-from pathlib import Path
 
 import pandas as pd
 
-
 class MplCanvas(FigureCanvasQTAgg):
+    '''Manages general plot style and settings'''
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
@@ -28,6 +24,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
 
 class EmissionPlot(QtWidgets.QWidget):
+    '''Contlos plotting of the set of emission spectra'''
 
     def __init__(self, data: pd.DataFrame):
         super().__init__()
@@ -53,12 +50,13 @@ class EmissionPlot(QtWidgets.QWidget):
         # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
         toolbar = NavigationToolbar(self.sc, self)
 
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(toolbar)
-        layout.addWidget(self.sc)
-        self.setLayout(layout)
+        L = QtWidgets.QVBoxLayout()
+        L.addWidget(toolbar)
+        L.addWidget(self.sc)
+        self.setLayout(L)
     
     def redraw(self, data):
+        '''Redraw lines with new data'''
         try:
             #clear plot
             self.sc.axes.cla()
@@ -75,16 +73,20 @@ class EmissionPlot(QtWidgets.QWidget):
             #update the range of the colorbar
             self.scalarmappaple.set_clim(data.columns.min(), data.columns.max())
 
-            self.sc.draw()
+            #redraw
+            self.sc.figure.canvas.draw_idle()
 
-        except TypeError:
-            print('column labels must by numbers')
+            return 'Redraw sucessfull'
 
-
+        except:
+            
+            return 'Redraw failed'
 
 
 
 if __name__ == '__main__':
+    
+    from pathlib import Path
 
     app = QtWidgets.QApplication([])
 
