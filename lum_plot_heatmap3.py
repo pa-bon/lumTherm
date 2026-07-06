@@ -227,7 +227,7 @@ if __name__ == '__main__':
     holder.data.sort_index(axis=1, inplace=True)
     lines = holder.data.to_numpy()
     
-    ratios = holder.calculate_sensitivity()
+    ratios = holder.calculate_ratios()
 
 
     w = Heatmap3WithSlider(ratios, lines, xvalues=holder.data.index, zvalues=holder.data.columns)
