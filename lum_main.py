@@ -18,6 +18,7 @@ from PyQt6.QtWidgets import (
 from lum_import import ImportWindow
 from lum_data_tmp import Data_tmp
 from lum_plot_emission import EmissionPlot
+from lum_plot_heatmap3 import Heatmap3WithSlider
 
 
 class MainWindow(QMainWindow):
@@ -31,27 +32,57 @@ class MainWindow(QMainWindow):
         self.path = path
         #data
         self.holder = holder
+        #tabs_present
+        self.tabs_present = False
         
         #window properties
         self.setWindowTitle("lumTherm")
     
 
-        tabs = QTabWidget()
-        tabs.setTabPosition(QTabWidget.TabPosition.West)
-        tabs.setMovable(True)
-        self.setCentralWidget(tabs)
+        self.tabs = QTabWidget()
+        self.tabs.setTabPosition(QTabWidget.TabPosition.West)
+        self.tabs.setMovable(True)
+        self.setCentralWidget(self.tabs)
 
         self.ImportTab = ImportWindow(self.path, self.holder)
-        tabs.addTab(self.ImportTab, 'Import')
+        self.ImportTab.data_replaced.connect(self.update_plots)
+        self.tabs.addTab(self.ImportTab, 'Import')
+
 
         self.EmPlotTab = EmissionPlot(self.holder.data)
-        tabs.addTab(self.EmPlotTab, 'Plot')
+        self.tabs.addTab(self.EmPlotTab, 'Plot')
 
-        tabs.tabBarClicked.connect(self.tab_changed)
+        #tabs.tabBarClicked.connect(self.tab_changed)
         
-    def tab_changed(self):
+    #def tab_changed(self):
+    #    self.holder.data = self.ImportTab.holder.data
+    #    self.EmPlotTab.redraw(self.holder.data)
+
+    def update_plots(self):
         self.holder.data = self.ImportTab.holder.data
         self.EmPlotTab.redraw(self.holder.data)
+        
+        self.ratios = self.holder.calculate_ratios()
+        self.sensitivity = self.holder.calculate_sensitivity()
+        self.lines = self.holder.data.to_numpy()
+
+        if self.tabs_present:
+            self.tabs.removeTab(2)
+            self.tabs.removeTab(2)
+
+        self.RatiosPlotTab = Heatmap3WithSlider(self.ratios, self.lines, self.holder.data.index, self.holder.data.columns)
+        self.tabs.addTab(self.RatiosPlotTab, 'Ratios')
+        
+        self.SensitivityPlotTab = Heatmap3WithSlider(self.sensitivity, self.lines, self.holder.data.index, self.holder.data.columns)
+        self.tabs.addTab(self.SensitivityPlotTab, 'Sensitivity')
+        
+        self.tabs_present = True
+
+
+
+        
+        
+        
 
 #testing
 if __name__ == '__main__':

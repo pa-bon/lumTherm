@@ -63,7 +63,7 @@ class Heatmap3(QWidget):
             self.xvalues = range(xmax)
 
         # Create the maptlotlib FigureCanvas object
-        self.sc = MplCanvas(self, width=6, height=5, dpi=100)
+        self.sc = MplCanvas(self, width=8, height=7, dpi=100)
         self.sc.mpl_connect('motion_notify_event', self.mouse_moved_on_plot)
 
         # plot heatmap
@@ -179,7 +179,7 @@ class Heatmap3WithSlider(QWidget):
         #set up horizotal slicer
         slider = QSlider(orientation=Qt.Orientation.Horizontal)
         slider.setMinimum(0)
-        slider.setMaximum(len(holder.data.columns)-1)
+        slider.setMaximum(data.shape[2]-1)
         slider.valueChanged.connect(self.value_changed)
 
         L1.addWidget(slider)
@@ -200,6 +200,8 @@ class Heatmap3WithSlider(QWidget):
             self.colormap(self.normalize(self.zvalues[num]))
             )
         self.slice_label.setText(f'Current: {self.zvalues[num]}')
+
+
 
 if __name__ == '__main__':
 

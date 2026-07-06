@@ -8,10 +8,14 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QTableView, 
-    QLabel, 
+    QLabel,
+    QPushButton 
 )
+
+from PyQt6.QtCore import pyqtSignal
+
 from lum_import_browse import Browse
-from lum_import_add_data import AddReplace
+#from lum_import_add_data import AddReplace
 from lum_import_reading import Reading
 from lum_import_headings import HeadingsSettings
 from lum_import_indexes import IndexesSettings
@@ -22,6 +26,8 @@ from lum_data_tmp import Data_tmp
 
 class ImportWindow(QWidget):
     '''The dialog window for importing from file'''
+
+    data_replaced = pyqtSignal()
     
     def __init__(self, path, holder):
         super().__init__() #use __init__() from QMainWindow 
@@ -78,12 +84,16 @@ class ImportWindow(QWidget):
         self.Indexes.index_changed.connect(self.update_index)
         self.Headings.headings_changed.connect(self.update_headings)
 
-        #add and replace tab
-        self.AddReplace = AddReplace()
-        L.addWidget(self.AddReplace)
+        #apply tab
+        #self.AddReplace = AddReplace()
+        #L.addWidget(self.AddReplace)
 
-        self.AddReplace.add_signal.connect(self.add_data)
-        self.AddReplace.repalce_signal.connect(self.replace_data)
+        #self.AddReplace.add_signal.connect(self.add_data)
+        #self.AddReplace.repalce_signal.connect(self.replace_data)
+        apply_button = QPushButton("Apply")
+        apply_button.clicked.connect(self.replace_data)
+        L.addWidget(apply_button)
+
 
         #message lable
         self.ImportMessage = QLabel('Messages: none')
@@ -168,15 +178,16 @@ class ImportWindow(QWidget):
 
         return self.raw_data
     
-    def add_data(self):
-        '''Adds data in current view to the total'''
-        mes = self.holder.add_data(self.raw_data)
-        self.ImportMessage.setText(mes)
+    #def add_data(self):
+    #    '''Adds data in current view to the total'''
+    #    mes = self.holder.add_data(self.raw_data)
+    #    self.ImportMessage.setText(mes)
     
     def replace_data(self):
         '''Replaces data from the current view in the total'''
         mes = self.holder.replace_data(self.raw_data)
-        self.ImportMessage.setText(mes)  
+        self.ImportMessage.setText(mes)
+        self.data_replaced.emit()  
 
 
 #testing

@@ -25,6 +25,7 @@ class Data_tmp():
     
     def replace_data(self, other):
         self.data = other
+        return 'Data updated'
 
         #'''Adds data while replacing duplicated columns'''
         #for column in list(other.columns.values):
@@ -48,6 +49,7 @@ class Data_tmp():
         crude_sensitivity = derivative.__abs__() * 100 / self.ratios
         self.sensitivity = gaussian_filter(crude_sensitivity, sigma=0.5, axes=(0,1), radius=(5,5))
         return self.sensitivity
+        
 
 
 if __name__ == '__main__':
