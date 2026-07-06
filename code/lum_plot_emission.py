@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     app = QtWidgets.QApplication([])
 
-    with open(Path('/home/beekeeper/programming/lumTherm/PB_1_99_em_340-10K.csv'), 'r') as f:
+    with open(Path('/home/beekeeper/programming/lumTherm/examples/PB_1_99_em_340-10K.csv'), 'r') as f:
         data = pd.read_csv(
                             f, 
                             sep=',', 
