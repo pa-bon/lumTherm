@@ -3,7 +3,7 @@ A software for analysis of optical thermometry.
 
 ## Overview
 
-Luminescent thermometry is one of the possibilities for optical redout of temperature. It works by exploring T-dependent emission spectra of luminescent species. In particular, a thermometric parameter monitoring a change in ratio of emission intensities in two different parts of the spectrum is often used (Figure 1). This software aims to facilitate finding the optimal wavelength, for which the ratios should be calculated to achieve highest sensitivity.  
+Luminescent thermometry is one of the possibilities for optical redout of temperature. It works by exploring T-dependent emission spectra of luminescent species. In particular, a thermometric parameter monitoring a change in ratio of emission intensities in two different parts of the spectrum is often used (Fig. 1). This software aims to facilitate finding the optimal wavelength, for which the ratios should be calculated to achieve highest sensitivity.  
 **LumTherm** is based on a brute-force approach in which the ratio between all pairs of wavelengths is calculated for all temperatures. Then, the graphical interface involving sensitivity heat-maps will help the user finding the ones optimal for them. 
 
 <figure>
@@ -41,7 +41,7 @@ The graphical interface is a single window with multiple tabs.
 
 ### The import tab
 
-In its core, this tab is a graphical interface to Pandas `read_csv()` function. It allows the user to import a text file into a dataframe (Figure 2).
+In its core, this tab is a graphical interface to Pandas `read_csv()` function. It allows the user to import a text file into a dataframe (Fig. 2).
 
 <figure>
     <img src="import_tab.png"
@@ -64,7 +64,7 @@ The adjustable parametrs are gouped into sections:
 
 ### The emission tab
 
-This tab displays the emission spectra as line plots, with the line color is determined by the temperature and follows a gradient (Figure 3).
+This tab displays the emission spectra as line plots, with the line color is determined by the temperature and follows a gradient (Fig. 3).
 
 <figure>
     <img src="emission_tab.png"
@@ -74,7 +74,7 @@ This tab displays the emission spectra as line plots, with the line color is det
 
 ### The ratios tab
 
-This tab displays a logarytmic heatmap of emission intensity ratios for a given temperature (selected with a slider) (Figure 4). Adjecent to the heatmap are two emission plots with stright lines indicated the numerator and the denominator for the current cursor position. The exact values can be read from the top-right corner. 
+This tab displays a logarytmic heatmap of emission intensity ratios for a given temperature (selected with a slider) (Fig. 4). Adjecent to the heatmap are two emission plots with stright lines indicated the numerator and the denominator for the current cursor position. The exact values can be read from the top-right corner. 
 
 <figure>
     <img src="ratios_tab.png"
@@ -84,14 +84,25 @@ This tab displays a logarytmic heatmap of emission intensity ratios for a given 
 
 ### The sensitivity tab
 
-It is analogous to the ratios tab, but the heatmap displays relative sensitivity (Figure 4).
+It is analogous to the ratios tab, but the heatmap displays relative sensitivity (Fig. 5).
 
 <figure>
     <img src="sr_tab.png"
          alt="The heatmap of exemplary sensitivity.">
-    <figcaption>Fig. 4. The heatmap of exemplary sensitivity. </figcaption>
+    <figcaption>Fig. 5. The heatmap of exemplary sensitivity. </figcaption>
 </figure>
 
+## Examples
+
+In the 'examples' cataloge, there aretwo files.
+
+The first one (Example1.csv) is used through the manual, it is the data from Fig. 1 (DOI: 0.26434/chemrxiv-2025-70v85). The correct import parametrs are visible in Fig. 2.
+
+The second file (Example2.csv) is an unpublished result. The correct import parameters for this file are: 
+* (Reading) Delimiter: `,`
+* (Reading) Skip rows: `0-21`
+* (X axis) First column
+* (Y axis) List: `5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0, 130.0, 140.0, 150.0, 160.0, 170.0, 180.0, 190.0, 200.0, 210.0, 220.0, 230.0, 240.0, 250.0, 260.0, 270.0, 280.0, 290.0, 300.0`
 
 
 

@@ -33,9 +33,9 @@ class DataHolder():
 
         intesities = self.data.to_numpy(dtype='float32')
 
-        A = intesities[:,None,:]
+        A = intesities[None,:,:]
 
-        B = (1/intesities)[None,:,:]
+        B = (1/intesities)[:,None,:]
 
         self.ratios = A * B
 
