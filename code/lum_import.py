@@ -170,12 +170,13 @@ class ImportWindow(QWidget):
         
         #delete empty columns
         self.raw_data.dropna(how='all', axis=1, inplace=True)
+        self.raw_data.sort_index(axis=1, inplace=True)
 
         return self.raw_data
     
     def replace_data(self):
         '''Replaces data from the current view in the total'''
-        mes = self.holder.replace_data(self.raw_data)
+        mes = self.holder.set_raw_data(self.raw_data)
         self.ImportMessage.setText(mes)
         self.data_replaced.emit()  
 

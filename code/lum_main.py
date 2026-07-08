@@ -39,28 +39,28 @@ class MainWindow(QMainWindow):
     def update_plots(self):
         '''Redraws the plots with new data'''
 
-        self.holder.data = self.ImportTab.holder.data
+        self.holder.raw_data = self.ImportTab.holder.raw_data
         
         self.ratios = self.holder.calculate_ratios()
         self.sensitivity = self.holder.calculate_sensitivity()
-        self.lines = self.holder.data.to_numpy()
+        self.lines = self.holder.get_raw_data_array()
 
         #remove tabs with heatmaps
         if self.tabs_present:
-            self.tabs.removeTab(2)
-            self.tabs.removeTab(2)
-            self.tabs.removeTab(2)
+            self.tabs.removeTab(1)
+            self.tabs.removeTab(1)
+            self.tabs.removeTab(1)
 
         #emission plot tab
-        self.EmPlotTab = EmissionPlot(self.holder.data)
+        self.EmPlotTab = EmissionPlot(self.holder.raw_data)
         self.tabs.addTab(self.EmPlotTab, 'Plot')
 
         #intensity ratios plot
-        self.RatiosPlotTab = HeatmapWithSlider(self.ratios, self.lines, self.holder.data.index, self.holder.data.columns)
+        self.RatiosPlotTab = HeatmapWithSlider(self.ratios, self.lines, self.holder.get_xvalues(), self.holder.get_zvalues())
         self.tabs.addTab(self.RatiosPlotTab, 'Ratios')
         
         #relative sensitivity plot
-        self.SensitivityPlotTab = HeatmapWithSlider(self.sensitivity, self.lines, self.holder.data.index, self.holder.data.columns)
+        self.SensitivityPlotTab = HeatmapWithSlider(self.sensitivity, self.lines, self.holder.get_xvalues(), self.holder.get_zvalues())
         self.tabs.addTab(self.SensitivityPlotTab, 'Sensitivity')
         
         self.tabs_present = True

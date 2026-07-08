@@ -68,7 +68,7 @@ class Heatmap(QWidget):
         assert data.shape[0] == data.shape[1]
         assert data.shape[0] == line.shape[0]
 
-        #store tests for further tests
+        #store shape for further tests
         self._data_shape = data.shape
 
         #determine limits of axes
@@ -232,6 +232,7 @@ class HeatmapWithSlider(QWidget):
   
     def value_changed(self, num):
         '''Handels the event of changing the slider position'''
+        print(num)
         self.heatmap.redraw(
             self.data[:,:,num], 
             self.lines[:,num], 
