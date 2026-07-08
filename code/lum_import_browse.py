@@ -22,23 +22,23 @@ class Browse(QWidget):
         self.path = path    
 
         #main layout
-        layout = QHBoxLayout()
-        self.setLayout(layout)
+        L = QHBoxLayout()
+        self.setLayout(L)
 
         #unchanging label
-        layout.addWidget(QLabel("File path:"))
+        L.addWidget(QLabel("File path:"))
         
         #space for typing/pasting/coping file path
         self.path_line = QLineEdit(self.path)
         self.path_line.textChanged.connect(self.path_line_changed)
         
-        layout.addWidget(self.path_line)
+        L.addWidget(self.path_line)
 
         #the 'Browse' button
         button = QPushButton("Browse")
         button.clicked.connect(self.browse_files)
 
-        layout.addWidget(button)
+        L.addWidget(button)
 
         #the select-file dialog window, activated when the 'Browse' button is pressed
         self.dialog = QFileDialog()
@@ -46,10 +46,9 @@ class Browse(QWidget):
   
     def browse_files(self):
         '''Handles event of clicking the browse button'''
-        file_name, _ = self.dialog.getOpenFileName(self, 'QFileDialog.getOpenFileName()', '', 'All Files (*);;CSV Files (*.csv)')
+        file_name, _ = self.dialog.getOpenFileName(self, 'QFileDialog.getOpenFileName()', '', 'All Files (*);;CSV Files (*.csv);;TXT files (*.txt)')
         self.path = file_name
         self.path_line.setText(self.path)
-        self.path_changed.emit()
 
     def path_line_changed(self, text):
         '''Handels event of path line changing'''

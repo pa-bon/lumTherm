@@ -2,7 +2,6 @@
 
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import Qt
-import pandas as pd
 
 
 class TableModel(QtCore.QAbstractTableModel):
@@ -34,6 +33,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
 #testing
 if __name__ == '__main__':
+    import pandas as pd
 
     class MainWindow(QtWidgets.QMainWindow):
 

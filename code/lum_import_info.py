@@ -1,4 +1,3 @@
-
 from PyQt6.QtWidgets import (
     QApplication, 
     QWidget, 
@@ -8,7 +7,7 @@ from PyQt6.QtWidgets import (
 )
 
 class DataInfo(QWidget):
-    '''A simple lable to commonicate the table's shape'''
+    '''A simple lable to communicate the table's shape'''
     def __init__(self, shape):
         super().__init__()
         

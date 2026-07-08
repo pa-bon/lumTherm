@@ -15,10 +15,11 @@ from lum_tools import (
 )
 
 class IndexesSettings(QWidget):
-    '''Add or replace existing data'''
+    '''Control the indexes of the dataframe.
+    
+    The indexes correspond to X values, or 'x' and 'y' axis in final 3D array'''
     
     #custom signals
-    #notifies when source or headings (r or l) change
     index_changed = pyqtSignal()
 
     def __init__(self):
@@ -81,7 +82,7 @@ class IndexesSettings(QWidget):
             self.index_changed.emit()
 
     def range_changed(self, text):
-        '''handels the event of changing range for headings
+        '''handels the event of changing range for indexes
         
         Will insert the list based on range into the list slot, 
         overriding what is already there.

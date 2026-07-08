@@ -49,10 +49,27 @@ class MplCanvas(FigureCanvasQTAgg):
         super().__init__(fig)
 
 class Heatmap(QWidget):
-    """Manages the imshow() plot of a square, 2D np.array, with line plots along both axes"""
+    """Manages the imshow() plot of a square, 2D np.array, with line plots along both axes 
+    with indicator lines responding to current cursor position
+    
+        data: 2D np.array
+    
+        line: 1D np.array
+    
+        line_color: color of line plots (default blue)
+    
+        xvalues: list of values corresponding to 'x' (and 'y') axis of data and 'x' axis of line,
+        default - counting numbers starting from 0"""
 
     def __init__(self, data: np.array, line: np.array, line_color='blue', xvalues=[]):
         super().__init__()
+
+        #test input data
+        assert data.shape[0] == data.shape[1]
+        assert data.shape[0] == line.shape[0]
+
+        #store tests for further tests
+        self._data_shape = data.shape
 
         #determine limits of axes
         try:        
@@ -109,9 +126,22 @@ class Heatmap(QWidget):
             self.hline.set_ydata([event.ydata, event.ydata])
             self.sc.figure.canvas.draw_idle()
     
-    def redraw(self, data: np.array, line: np.array, line_color):
-        """Redraws the plot with new data"""
+    def redraw(self, data: np.array, line: np.array, line_color='blue'):
+        """Redraws the plot with new data
+        
+            data: 2D np.array
+        
+            line: 1D np.array
+        
+            line_color: color of line plots (default blue)
+        
+        The arrays are expected to be of the same shape as the ones used in plot creation"""
         try:
+            #test input data
+            assert self._data_shape[0] == data.shape[0]
+            assert self._data_shape[0] == data.shape[1]
+            assert self._data_shape[0] == line.shape[0]
+
             #update data on heatmap
             self.plot.set_data(data)
             
@@ -129,18 +159,26 @@ class Heatmap(QWidget):
             self.sc.figure.canvas.draw_idle()
 
             return 'Redraw sucessfull'
-
+        
         except:
             
             return 'Redraw failed'
-
-
 
 class HeatmapWithSlider(QWidget):
     """A heatmap with an interactive slider.
     
     The slider selcts a 2D slice from a 3D np.array for plotting. 
-    The shape of the 3D array must be (n, n, m), so tht the 2D slices will be square"""
+    The shape of the 3D array must be (n, n, m), so that the 2D slices will be square
+
+        data: 3D np.array
+        
+        line: 2D np.array
+        
+        xvalues: list of values corresponding to 'x' (and 'y') axis of `data` and 'x' axis of `line`,
+            if empty - counting numbers starting from 0 will be used
+        
+        zvalues: list of values corresponding to 'z' axis of `data` and 'y' axis of `line`,
+            if empty - counting numbers starting from 0 will be used"""
 
     def __init__(self, data: np.array, lines: np.array, xvalues=[], zvalues=[]):
         super().__init__()
@@ -211,7 +249,7 @@ if __name__ == '__main__':
 
     app = QApplication([])
 
-    with open(Path('/home/beekeeper/programming/lumTherm/PB_1_99_em_340-10K.csv'), 'r') as f:
+    with open(Path('/home/beekeeper/programming/lumTherm/examples/Example1.csv'), 'r') as f:
         data = pd.read_csv(
                             f, 
                             sep=',', 

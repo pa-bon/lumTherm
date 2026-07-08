@@ -36,15 +36,10 @@ class MainWindow(QMainWindow):
         self.ImportTab.data_replaced.connect(self.update_plots)
         self.tabs.addTab(self.ImportTab, 'Import')
 
-        #emission plot tab
-        self.EmPlotTab = EmissionPlot(self.holder.data)
-        self.tabs.addTab(self.EmPlotTab, 'Plot')
-
     def update_plots(self):
         '''Redraws the plots with new data'''
 
         self.holder.data = self.ImportTab.holder.data
-        self.EmPlotTab.redraw(self.holder.data)
         
         self.ratios = self.holder.calculate_ratios()
         self.sensitivity = self.holder.calculate_sensitivity()
@@ -54,6 +49,11 @@ class MainWindow(QMainWindow):
         if self.tabs_present:
             self.tabs.removeTab(2)
             self.tabs.removeTab(2)
+            self.tabs.removeTab(2)
+
+        #emission plot tab
+        self.EmPlotTab = EmissionPlot(self.holder.data)
+        self.tabs.addTab(self.EmPlotTab, 'Plot')
 
         #intensity ratios plot
         self.RatiosPlotTab = HeatmapWithSlider(self.ratios, self.lines, self.holder.data.index, self.holder.data.columns)

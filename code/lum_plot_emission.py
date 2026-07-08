@@ -24,13 +24,17 @@ class MplCanvas(FigureCanvasQTAgg):
 
 
 class EmissionPlot(QtWidgets.QWidget):
-    '''Contlos plotting of the set of emission spectra'''
+    '''Controls plotting of the set of emission spectra
+    
+    Data must be a pandas dataframe, with both indexes and headings being numbers (not text)'''
 
     def __init__(self, data: pd.DataFrame):
         super().__init__()
 
+        #test input data
+        assert data.index[0] + data.columns[0]
+
         # Create the maptlotlib FigureCanvas object,
-        # which defines a single set of axes as self.axes.
         self.sc = MplCanvas(self, width=5, height=4, dpi=100)
 
         # setup the normalization and the colormap
@@ -55,9 +59,15 @@ class EmissionPlot(QtWidgets.QWidget):
         L.addWidget(self.sc)
         self.setLayout(L)
     
-    def redraw(self, data):
-        '''Redraw lines with new data'''
+    def redraw(self, data: pd.DataFrame):
+        '''Redraw lines with new data
+        
+        Data must be a pandas dataframe, with both indexes and headings being numbers (not text)'''
+
         try:
+            #test input data
+            assert data.index[0] + data.columns[0]
+            
             #clear plot
             self.sc.axes.cla()
             
@@ -90,7 +100,7 @@ if __name__ == '__main__':
 
     app = QtWidgets.QApplication([])
 
-    with open(Path('/home/beekeeper/programming/lumTherm/examples/PB_1_99_em_340-10K.csv'), 'r') as f:
+    with open(Path('/home/beekeeper/programming/lumTherm/examples/Example1.csv'), 'r') as f:
         data = pd.read_csv(
                             f, 
                             sep=',', 

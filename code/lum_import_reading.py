@@ -14,15 +14,10 @@ from lum_tools import (
 )
 
 class Reading(QWidget):
-    '''Add or replace existing data'''
+    '''Control the import parameters.'''
     
     #custom signals
-    
-    #notifies when delimiter, rows to skip (skr) or columns to use (uc) change
     reading_changed = pyqtSignal()
-    
-    #notifies when source or headings (r or l) change
-    headings_changed = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -40,12 +35,12 @@ class Reading(QWidget):
 
 
         #main layout
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        L = QVBoxLayout()
+        self.setLayout(L)
 
         #reading from file section
         reading_box = QGroupBox('Reading')
-        layout.addWidget(reading_box)
+        L.addWidget(reading_box)
         reading = QGridLayout()
         reading_box.setLayout(reading)
         

@@ -17,10 +17,11 @@ from lum_tools import (
 )
 
 class HeadingsSettings(QWidget):
-    '''Add or replace existing data'''
+    '''Control the headings of the dataframe.
+    
+    The headings correspond to Y values, or 'z' axis in final 3D array'''
     
     #custom signals
-    #notifies when source or headings (r or l) change
     headings_changed = pyqtSignal()
 
     def __init__(self):
@@ -33,7 +34,7 @@ class HeadingsSettings(QWidget):
             'source':'ro',           #take data from range or list
             'range':'',              #text seen by user
             'list':'',               #text seen by user
-            'ro':[],                 #headings when source 'ro' (row)
+            'ro':0,                  #headings when source 'ro' (row) - 0 if first row, None otherwise
             'ra':[],                 #headings when source 'ra' (range)
             'li':[]                  #headings when source 'li' (list)
         }
@@ -83,6 +84,7 @@ class HeadingsSettings(QWidget):
         '''Handels the event of selecting the row option'''
         if selected:
             self.headings_settings['source'] = 'ro'
+            self.headings_settings['ro'] = 0
             self.range_line.setEnabled(False)
             self.list_line.setEnabled(False)
             self.headings_changed.emit()
@@ -91,6 +93,7 @@ class HeadingsSettings(QWidget):
         '''Handels the event of selecting the range option'''
         if selected:
             self.headings_settings['source'] = 'ra'
+            self.headings_settings['ro'] = None
             self.range_line.setEnabled(True)
             self.list_line.setEnabled(False)
             self.headings_changed.emit()
@@ -99,6 +102,7 @@ class HeadingsSettings(QWidget):
         '''Handels the event of selecting the list option'''
         if selected:
             self.headings_settings['source'] = 'li'
+            self.headings_settings['ro'] = None
             self.range_line.setEnabled(False)
             self.list_line.setEnabled(True)
             self.headings_changed.emit()

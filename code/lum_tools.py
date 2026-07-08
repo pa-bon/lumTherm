@@ -1,3 +1,6 @@
+'''
+A collection of various functions usefull in many parts of the program. 
+'''
 import numpy as np
 
 def phriser(text: str):
@@ -46,6 +49,9 @@ def phriser_range(text: str):
     
     String must contain tree integers corresponding to `start`, `stop` and `step`, seperated by commas.
     Expresion `(start - stop)` must be devisible by `step`.
+    Absolute value of 'step' must be at least 0.001.
+
+    Examples: '1,4,1' '1.0, 2.0, 0.1', '10,0,-2'
     
     Invalid inputs return empty list
     '''
@@ -117,4 +123,5 @@ def mark_text_edit_error(widget, condition):
                              QTextEdit { background-color: rgb(255, 200, 200)}
                              """)
 #testing
-    #pass
+if __name__ == '__main__':
+    pass
