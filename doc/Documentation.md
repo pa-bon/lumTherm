@@ -9,7 +9,9 @@ Luminescent thermometry is one of the possibilities for optical redout of the te
 <figure>
     <img src="lum_therm_2.png"
          alt="Luminescent thermometry of a platinum complex">
-    <figcaption>Fig. 1. An exeplary set of T-dependent emission spectra (a) for a platinum complex, with sensitivity analysis on (b) and temperature redout error on (c). For more information, see the oryginal publication [DOI: 0.26434/chemrxiv-2025-70v85] </figcaption>
+    <figcaption>Fig. 1. An exeplary set of T-dependent emission spectra (a) for a platinum complex, with sensitivity analysis on (b) and temperature redout error on (c). For more information, see the 
+        <a herf=https://chemrxiv.org/doi/full/10.26434/chemrxiv-2025-70v85>oryginal publication</a> 
+    [DOI: 0.26434/chemrxiv-2025-70v85] </figcaption>
 </figure>
 
 ## Backend
@@ -35,6 +37,8 @@ The ratios are obtained with simple devision of the intensity at first wavelengh
 
 The (realtive) sensitivity, Sr, is defined as the derivative of the intensity ratio over temperature divded by the ratio. It is calculated after smoothing the gradient over themperature with a gaussian filter (SciPy). This reduces the value for the areas where the random noise dominates over signal, and eliminates edge cases (like Sr = 0). The senistiviteis are in %/K.
 
+DataHolder calss is responsible for data storage and prosesing.
+
 ## Frontend
 
 The graphical interface is a single window with multiple tabs.
@@ -57,8 +61,8 @@ The adjustable parameters are grouped into sections:
     * Delimiter - any string. Any change triggers the reload of data.
     * Skip rows - indexes if lines to skip *from the original file* when loading the data. The input filed suports any combination of single integers (0,1,2..) or ranges (1-3, 0-20...) seperated by commas. Only a valid input triggers the reload of data. Invalid inputs are marked in red. The counting starts from 0.
     * Use columns - indexes of columns (not column headings!) to retain after loading the data. The input field works analogously to 'Skip rows'.
-5. **X axis** - allows to set the values of wavelenghts (row indexes). They can be either read from the firs column in the dataframe, or from the range submitted by the user by providing a start value, a stop value and a value of a single step, seperated by commas. The stop is included in the range, and it must be a whole number of steps from the start. The range is generated with Numpy `np.linespace()`, so it supports floats and negative steps. Choosing the 'First column' option triggers the reload of data, choosing the 'Range' option only changes the `DataFrame.index` parametr, if the imput is valid and the resulting linespace is of apropriate lenght.
-6. **Y axis** - allows to set the temperatures (column headings). Similarly to the indexes, they can be either read from the firs row in the dataframe, or from the range submitted by the user. If a range is given, a list of all temperatures within it is constructued (floats seperated by commas), which is editable by the user and may also be chosen as the headings sourse. The numbers in the list may also be written entierly by hand, which is usefull when the distribution of temperatuures is not uniform. Choosing the 'First row' option triggers the reload of data. Choosing other options only changes the `DataFrame.columns` parametr, if the imput is valid and the resulting range (or list) is of apropriate lenght.
+5. **X axis** - allows to set the values of wavelenghts (row indexes). They can be either read from the firs column in the dataframe, or from the range submitted by the user by providing a start value, a stop value and a value of a single step, seperated by commas. The stop is included in the range, and it must be a whole number of steps from the start. The range is generated with Numpy `np.linespace()`, so it supports floats and negative steps. Switching source triggers the reload of data, choosing the 'Range' option only changes the `DataFrame.index` parametr, if the imput is valid and the resulting linespace is of apropriate lenght.
+6. **Y axis** - allows to set the temperatures (column headings). Similarly to the indexes, they can be either read from the firs row in the dataframe, or from the range submitted by the user. If a range is given, a list of all temperatures within it is constructued (floats seperated by commas), which is editable by the user and may also be chosen as the headings sourse. The numbers in the list may also be written entierly by hand, which is usefull when the distribution of temperatuures is not uniform. Switching source triggers the reload of data. Editing 'Range' or 'List' only changes the `DataFrame.columns` parametr, if the imput is valid and the resulting range (or list) is of apropriate lenght.
 7. **Apply button** - saves the current dataframe and triggers the (re)drawing of all plots. After saving, the dataframe is sorted so that the temperature (column headings) increses monotonicly with column index
 8. **Messages** - Additional info and warnings from the functions used for loading the data are diplayed at the boottom of the tab.
 
