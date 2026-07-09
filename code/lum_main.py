@@ -73,7 +73,7 @@ if __name__ == '__main__':
     
     app = QApplication([])
 
-    window = MainWindow('/home/beekeeper/programming/lumTherm/', holder)
+    window = MainWindow('..', holder)
     window.show()
 
     app.exec()
