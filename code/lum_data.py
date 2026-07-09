@@ -131,8 +131,8 @@ if __name__ == '__main__':
     holder = DataHolder()
 
     input_1 = pd.DataFrame([[1,2], [1,2], [1,2]])
-    ratios_1 = np.array([[[1,1],[1,1]],[[1,1],[1,1]],[[1,1],[1,1,1]]])
-    sensitivity_1 = ratios_1 = np.array([[[0,0,0],[0,0,0],[0,0,0]], [[0,0,0],[0,0,0],[0,0,0]]])
+    ratios_1 = np.array([[[1,1],[1,1],[1,1]],[[1,1],[1,1],[1,1]],[[1,1],[1,1],[1,1]]], dtype='float32')
+    sensitivity_1 = ratios_1 - ratios_1
     
     input_2 = pd.DataFrame([[1,2], [1,2], [1,2]])
     input_2.index = [0,1,2]
@@ -142,6 +142,7 @@ if __name__ == '__main__':
     input_3.index = ['1', '2', '3']
     input_3.columns = ['one', 'two']
 
+    #
     holder.set_raw_data(input_1)
     
     assert holder._raw_data.equals(input_1)
@@ -162,20 +163,18 @@ if __name__ == '__main__':
 
     assert holder.raw_data.empty
 
-    print(holder.set_raw_data(input_3))
+    holder.set_raw_data(input_3)
 
     assert not holder.raw_data.equals(input_3)
     assert holder.raw_data.equals(pd.DataFrame([]))
 
     holder.raw_data = input_1
-
-    print(holder.calculate_ratios())
     
     assert np.array_equal(holder.calculate_ratios(), ratios_1)
-    assert np.array_equal(holder.get_ratios() == ratios_1)
+    assert np.array_equal(holder.get_ratios(), ratios_1)
 
-    assert holder.calculate_sensitivity() == sensitivity_1
-    assert holder.get_sensitivity() == sensitivity_1
+    assert np.array_equal(holder.calculate_sensitivity(), sensitivity_1)
+    assert np.array_equal(holder.get_sensitivity(), sensitivity_1)
 
     print('Tests passed')
 
