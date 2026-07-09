@@ -58,7 +58,6 @@ def test_set_raw_data_1(holder, input_1):
 
 def test_set_raw_data_2(holder, input_2, input_1):
     '''Tests handling of data with procesable text for index/headings'''
-
     holder.set_raw_data(input_2)
     assert holder.raw_data.equals(input_1)
 
@@ -100,29 +99,32 @@ def test_sensitivity(holder, input_1, sensitivity_1):
 
 def test_get_xvalues(holder, input_1):
     '''Test get_xvalues'''
-
     holder.raw_data = input_1
     assert holder.get_xvalues() == [0,1,2]
 
 def test_get_zvalues(holder, input_1):
     '''Test get_zvalues'''
-
     holder.raw_data = input_1
     assert holder.get_zvalues() == [0,1]
 
 def test_get_ratios(holder, input_1, ratios_1):
     '''Test get_ratios'''
-
     holder.raw_data = input_1
     holder.calculate_ratios()
     assert np.array_equal(holder.get_ratios(), ratios_1)
 
 def test_get_sesnitivity(holder, input_1, sensitivity_1):
     '''Test get_sensitivity'''
-
     holder.raw_data = input_1
     holder.calculate_sensitivity()
     assert np.array_equal(holder.get_sensitivity(), sensitivity_1)
+
+def test_get_raw_data_array(holder, input_1):
+    '''Test get_raw_data_array'''
+    holder.raw_data = input_1
+    assert np.array_equal(holder.get_raw_data_array(), np.array([[1,2], [1,2], [1,2]]))
+
+
 
 
 
