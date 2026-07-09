@@ -170,7 +170,6 @@ class ImportWindow(QWidget):
         
         #delete empty columns
         self.raw_data.dropna(how='all', axis=1, inplace=True)
-        self.raw_data.sort_index(axis=1, inplace=True)
 
         return self.raw_data
     

@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
     def update_plots(self):
         '''Redraws the plots with new data'''
 
-        self.holder.raw_data = self.ImportTab.holder.raw_data
+        self.holder.raw_data = self.ImportTab.holder.raw_data.sort_index(axis=1, inplace=False)
         
         self.ratios = self.holder.calculate_ratios()
         self.sensitivity = self.holder.calculate_sensitivity()

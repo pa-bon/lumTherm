@@ -232,7 +232,6 @@ class HeatmapWithSlider(QWidget):
   
     def value_changed(self, num):
         '''Handels the event of changing the slider position'''
-        print(num)
         self.heatmap.redraw(
             self.data[:,:,num], 
             self.lines[:,num], 

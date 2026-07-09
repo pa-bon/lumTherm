@@ -42,7 +42,6 @@ class EmissionPlot(QtWidgets.QWidget):
         colormap = cm.managua_r
 
         # plot
-        data.sort_index(axis=1, inplace=True)
         for column in data.columns:
             self.sc.axes.plot(data[column], color=colormap(normalize(column)))
 

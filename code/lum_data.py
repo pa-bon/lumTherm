@@ -131,7 +131,7 @@ if __name__ == '__main__':
     holder = DataHolder()
 
     input_1 = pd.DataFrame([[1,2], [1,2], [1,2]])
-    ratios_1 = np.array([[[1,1],[1,1]],[[1,1],[1,1]],[[1,1],[1,1]]])
+    ratios_1 = np.array([[[1,1],[1,1]],[[1,1],[1,1]],[[1,1],[1,1,1]]])
     sensitivity_1 = ratios_1 = np.array([[[0,0,0],[0,0,0],[0,0,0]], [[0,0,0],[0,0,0],[0,0,0]]])
     
     input_2 = pd.DataFrame([[1,2], [1,2], [1,2]])
