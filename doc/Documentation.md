@@ -14,7 +14,13 @@ Luminescent thermometry is one of the possibilities for optical redout of the te
     [DOI: 0.26434/chemrxiv-2025-70v85] </figcaption>
 </figure>
 
+## Usage
+
+To run the program, execute the `lum_main.py` script from the `code` directory. The graphical interface should be intuitive, if not, consult the [Frontend section](#frontend). Some exemplary data is provided in the `examples` directory.
+
 ## Backend
+
+The prgram is written in Python. All scripts are in the `code` directory.
 
 ### Packages
 
@@ -45,7 +51,7 @@ The graphical interface is a single window with multiple tabs.
 
 ### The import tab
 
-In its core, this tab is a graphical interface to Pandas `read_csv()` function. It allows the user to import a text file into a dataframe (Fig. 2).
+In its core, this tab is a graphical interface to Pandas `read_csv()` function. It allows the user to import a text file into a dataframe (Fig. 2). The file must be *.csv-like*, i.e., it must contain data separated with some delimiter, broken into lines with equal number of delimiter in each line. The lines will be treated as rows, while the delimiter will be treated as marking the border between two columns. If some lines have a different number of delimiters then other, `read_csv()` will fail and the file will be presented as one column, with each line occupying one cell. In that case, the troublesome lines may be eliminated with 'Skip rows:' field. Blank lines are ignored automatically.  
 
 <figure>
     <img src="import_tab.png"
