@@ -20,6 +20,8 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes = fig.add_subplot(111)
         self.axes.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
         self.axes.yaxis.major.formatter._useMathText = True
+        self.axes.xaxis.set_label_text('λ / nm')
+        self.axes.yaxis.set_label_text('Intensity / a.u.')
         super().__init__(fig)
 
 
@@ -99,7 +101,7 @@ if __name__ == '__main__':
 
     app = QtWidgets.QApplication([])
 
-    with open(Path('/home/beekeeper/programming/lumTherm/examples/Example1.csv'), 'r') as f:
+    with open(Path('../examples/Example1.csv'), 'r') as f:
         data = pd.read_csv(
                             f, 
                             sep=',', 

@@ -44,7 +44,9 @@ class MplCanvas(FigureCanvasQTAgg):
         self.ax_B.tick_params(axis="both", labelleft=False, bottom=False, labelbottom=False)
         self.ax.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
         self.ax.yaxis.major.formatter._useMathText = True
+        self.ax.yaxis.set_label_text('λ_denominator / nm')
         self.ax.xaxis.major.formatter._useMathText = True
+        self.ax.xaxis.set_label_text('λ_numerator / nm')
         
         super().__init__(fig)
 
@@ -239,8 +241,6 @@ class HeatmapWithSlider(QWidget):
             )
         self.slice_label.setText(f'Current: {self.zvalues[num]}')
 
-
-
 if __name__ == '__main__':
 
     from pathlib import Path
@@ -249,7 +249,7 @@ if __name__ == '__main__':
 
     app = QApplication([])
 
-    with open(Path('/home/beekeeper/programming/lumTherm/examples/Example1.csv'), 'r') as f:
+    with open(Path('../examples/Example1.csv'), 'r') as f:
         data = pd.read_csv(
                             f, 
                             sep=',', 
@@ -263,14 +263,13 @@ if __name__ == '__main__':
     data.columns = list(range(340, 0, -10))
 
     holder = DataHolder()
-    holder.add_data(data)
-    holder.data.sort_index(axis=1, inplace=True)
-    lines = holder.data.to_numpy()
+    holder.raw_data = data.sort_index(axis=1)
+  
+    lines = holder.get_raw_data_array()
     
-    ratios = holder.calculate_sensitivity()
+    ratios = holder.calculate_ratios()
 
-
-    w = HeatmapWithSlider(ratios, lines, xvalues=holder.data.index, zvalues=holder.data.columns)
+    w = HeatmapWithSlider(ratios, lines, xvalues=holder.get_xvalues(), zvalues=holder.get_zvalues())
     w.show()
 
     app.exec()      

@@ -188,7 +188,7 @@ if __name__ == '__main__':
     
     app = QApplication([])
 
-    window = ImportWindow('/home/beekeeper/programming/lumTherm/', holder)
+    window = ImportWindow('..', holder)
     window.show()
 
     app.exec()
